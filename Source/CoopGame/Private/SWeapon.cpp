@@ -30,7 +30,12 @@ ASWeapon::ASWeapon()
 	BaseDamage = 20.0f;
 	RateOfFire = 600;
 	
+	//Объект можно передавать по сети
 	SetReplicates(true);
+
+	//Частота обновления сети - от этого зависит скорость передачи данных
+	NetUpdateFrequency = 66.0f;
+	MinNetUpdateFrequency = 33.0f;
 }
 
 void ASWeapon::BeginPlay()
@@ -71,11 +76,13 @@ void ASWeapon::Fire()
 
 	FVector TracerEndPoint = TraceEnd;
 
+	EPhysicalSurface SurfaceType = SurfaceType_Default;
+
 	if (GetWorld()->LineTraceSingleByChannel(Hit, EyeStart, TraceEnd, COLLISION_WEAPON, QueryParams))
 	{
 		AActor* HitActor = Hit.GetActor();
 
-		EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+		SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
 		float CurrentDamage = BaseDamage;
 		if (SurfaceType == SURFACE_FLESHVULNERABLE)
 		{
@@ -84,26 +91,10 @@ void ASWeapon::Fire()
 
 		UGameplayStatics::ApplyPointDamage(HitActor, CurrentDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
 
-		UParticleSystem* SelectImpact = nullptr;
-
-
-		switch (SurfaceType)
-		{
-		case SUFRACE_FLESHDEFAULT:
-		case SURFACE_FLESHVULNERABLE:
-			SelectImpact = FleshImpactEffect;
-			break;
-		default:
-			SelectImpact = DefaultImpactEffect;
-			break;
-		}
-
-		if (SelectImpact)
-		{
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectImpact, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
-		}
-
 		TracerEndPoint = Hit.ImpactPoint;
+
+		//Показать эффекты от выстрела на поверхности
+		PlayImpactEffects(SurfaceType, TracerEndPoint);
 	}
 
 	if (DebugWeaponDrawing > 0)
@@ -111,21 +102,26 @@ void ASWeapon::Fire()
 		DrawDebugLine(GetWorld(), EyeStart, TraceEnd, FColor::White, false, 1.0f, 0, 1.0f);
 	}
 
+	//Показать эффекты от выстрела на оружии
 	PlayFireEffects(TracerEndPoint);
 
+	//Если это сервер, заполнть структуру для передачи на него
 	if (Role == ROLE_Authority)
 	{
 		HitScanTrace.TraceTo = TracerEndPoint;
+		HitScanTrace.SurfaceType = SurfaceType;
 	}
 
 	LastFireTime = GetWorld()->TimeSeconds;
 }
 
+//Выполнять на сервере
 void ASWeapon::ServerFire_Implementation()
 {
 	Fire();
 }
 
+//Проверять доступность сервера?
 bool ASWeapon::ServerFire_Validate()
 {
 	return true;
@@ -133,8 +129,12 @@ bool ASWeapon::ServerFire_Validate()
 
 void ASWeapon::OnRep_HitScanTrace()
 {
-	//play cosmetic FX
+	//Показать эффекты от выстрела на оружии
 	PlayFireEffects(HitScanTrace.TraceTo);
+
+	//Показать эффекты от выстрела на поверхности
+	PlayImpactEffects(HitScanTrace.SurfaceType, HitScanTrace.TraceTo);
+
 }
 
 void ASWeapon::StartFire()
@@ -175,6 +175,37 @@ void ASWeapon::PlayFireEffects(FVector TracerEndPoint)
 			PC->ClientPlayCameraShake(FireCamShake);
 		}
 	}
+}
+
+void ASWeapon::PlayImpactEffects(EPhysicalSurface SurfaceType, FVector ImpactPoint)
+{
+	UParticleSystem* SelectImpact = nullptr;
+
+//Задать частицы в зависимости от материала поверхности
+	switch (SurfaceType)
+	{
+	case SUFRACE_FLESHDEFAULT:
+	case SURFACE_FLESHVULNERABLE:
+		SelectImpact = FleshImpactEffect;
+		break;
+	default:
+		SelectImpact = DefaultImpactEffect;
+		break;
+	}
+
+	if (SelectImpact)
+	{
+		//Положение сокета на оружии
+		FVector MuzzleLocation = MeshComp->GetSocketLocation(MuzzleSocketName);
+		//Вектор, направленный в сторону стрельбы
+		FVector ShotVectorDirection = ImpactPoint - MuzzleLocation;
+		ShotVectorDirection.Normalize();
+		//Ротатор в сторону стрельбы
+		FRotator ShotRotatorDirection = ShotVectorDirection.Rotation();
+		//Спавн частиц на поверхности 
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectImpact, ImpactPoint, ShotRotatorDirection);
+	}
+
 }
 
 void ASWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

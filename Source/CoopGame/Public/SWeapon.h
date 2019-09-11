@@ -1,5 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+//родительский класс всех классов оружи€. 
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -11,14 +13,18 @@ class UDamageType;
 class UParticleSystem;
 class UCameraShake;
 
+//—труктура дл€ хранени€ данных трейсинга, передаваемых в сети.
 USTRUCT()
 struct FHitScanTrace
 {
 	GENERATED_BODY()
 
 public:
+//физический материал поверхности, которую достигает трейсинг
 	UPROPERTY()
-		FVector_NetQuantize TraceFrom;
+		TEnumAsByte<EPhysicalSurface> SurfaceType;
+
+//конечна€ точка трейсинга
 	UPROPERTY()
 		FVector_NetQuantize TraceTo;
 };
@@ -55,7 +61,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 		float BaseDamage;
 
+	//ѕоказать эффекты от выстрела на оружии
 	void PlayFireEffects(FVector TracerEndPoint);
+
+	//ѕоказать эффекты от выстрела на поверхности
+	void PlayImpactEffects(EPhysicalSurface SurfaceType, FVector ImpactPoint);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 		TSubclassOf<UCameraShake> FireCamShake;
