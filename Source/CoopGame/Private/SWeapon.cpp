@@ -105,7 +105,7 @@ void ASWeapon::Fire()
 	//Показать эффекты от выстрела на оружии
 	PlayFireEffects(TracerEndPoint);
 
-	//Если это сервер, заполнть структуру для передачи на него
+	//Если это сервер, заполнить структуру для передачи на него
 	if (Role == ROLE_Authority)
 	{
 		HitScanTrace.TraceTo = TracerEndPoint;

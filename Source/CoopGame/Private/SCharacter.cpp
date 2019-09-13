@@ -16,17 +16,28 @@ ASCharacter::ASCharacter()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+//создать спрингАрм
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
+
+//Разрешить управление поворотом перса
 	SpringArmComp->bUsePawnControlRotation = true;
+
+//Присоединить спрингАрм к рут-компоненту
 	SpringArmComp->SetupAttachment(RootComponent);
 
+//Создать камеру
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
+
+//Присоединить камеру к спрингАрму
 	CameraComp->SetupAttachment(SpringArmComp);
 
+//Создать компонент
 	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
 
+//Назначить реакцию капсулы на трейс-канал коллизии - игнорировать
 	GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
 
+//Разрешить красться
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
 
 	DefaultFOV = CameraComp->FieldOfView;
@@ -43,16 +54,25 @@ void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//Задать функцию для перегрузки евента
 	HealthComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
 
+	//Если выполняется на сервере
 	if (Role == ROLE_Authority)
 	{
+		//Задать параметры спавна оружия
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		//Спавнить оружие
 		CurrentWeapon = GetWorld()->SpawnActor<ASWeapon>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+
 		if (CurrentWeapon)
 		{
+			//назначить овнера оружия классом перса
 			CurrentWeapon->SetOwner(this);
+
+			//Присоединить оружие к мешу перса
 			CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
 		}
 	}
@@ -106,13 +126,23 @@ void ASCharacter::StopFire()
 
 void ASCharacter::OnHealthChanged(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
+
+	//Если ХП кончилось и перс не был мертв
 	if (Health <= 0.0f && !bIsDied)
 	{
 		//Pawn is died
 		bIsDied = true;
+
+		//Прекратить движение
 		GetMovementComponent()->StopMovementImmediately();
+
+		//Выключить коллизии
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		//Запретить управление персом
 		DetachFromControllerPendingDestroy();
+
+		//Уничтожить объект перса через ... сек
 		SetLifeSpan(3.0f);
 	}
 }
@@ -122,7 +152,10 @@ void ASCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//Назначить конечный угол обзора
 	float TargetFOV = bWantsToZoom ? ZoomedFOV : DefaultFOV;
+
+	//Плавно изменить угол обзора от CameraComp->FieldOfView до TargetFOV
 	float CurrentFOV = FMath::FInterpTo(CameraComp->FieldOfView, TargetFOV, DeltaTime, ZoomInterpSpeed);
 	CameraComp->SetFieldOfView(CurrentFOV);
 }
@@ -158,4 +191,5 @@ void ASCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ASCharacter, CurrentWeapon);
+	DOREPLIFETIME(ASCharacter, bIsDied);
 }
