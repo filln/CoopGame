@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+п»ї// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SCharacter.h"
 #include "Camera/CameraComponent.h"
@@ -16,28 +16,28 @@ ASCharacter::ASCharacter()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-//создать спрингАрм
+//СЃРѕР·РґР°С‚СЊ СЃРїСЂРёРЅРіРђСЂРј
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 
-//Разрешить управление поворотом перса
+//Р Р°Р·СЂРµС€РёС‚СЊ СѓРїСЂР°РІР»РµРЅРёРµ РїРѕРІРѕСЂРѕС‚РѕРј РїРµСЂСЃР°
 	SpringArmComp->bUsePawnControlRotation = true;
 
-//Присоединить спрингАрм к рут-компоненту
+//РџСЂРёСЃРѕРµРґРёРЅРёС‚СЊ СЃРїСЂРёРЅРіРђСЂРј Рє СЂСѓС‚-РєРѕРјРїРѕРЅРµРЅС‚Сѓ
 	SpringArmComp->SetupAttachment(RootComponent);
 
-//Создать камеру
+//РЎРѕР·РґР°С‚СЊ РєР°РјРµСЂСѓ
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 
-//Присоединить камеру к спрингАрму
+//РџСЂРёСЃРѕРµРґРёРЅРёС‚СЊ РєР°РјРµСЂСѓ Рє СЃРїСЂРёРЅРіРђСЂРјСѓ
 	CameraComp->SetupAttachment(SpringArmComp);
 
-//Создать компонент
+//РЎРѕР·РґР°С‚СЊ РєРѕРјРїРѕРЅРµРЅС‚
 	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
 
-//Назначить реакцию капсулы на трейс-канал коллизии - игнорировать
+//РќР°Р·РЅР°С‡РёС‚СЊ СЂРµР°РєС†РёСЋ РєР°РїСЃСѓР»С‹ РЅР° С‚СЂРµР№СЃ-РєР°РЅР°Р» РєРѕР»Р»РёР·РёРё - РёРіРЅРѕСЂРёСЂРѕРІР°С‚СЊ
 	GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
 
-//Разрешить красться
+//Р Р°Р·СЂРµС€РёС‚СЊ РєСЂР°СЃС‚СЊСЃСЏ
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
 
 	DefaultFOV = CameraComp->FieldOfView;
@@ -54,25 +54,25 @@ void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//Задать функцию для перегрузки евента
+	//Р—Р°РґР°С‚СЊ С„СѓРЅРєС†РёСЋ РґР»СЏ РїРµСЂРµРіСЂСѓР·РєРё РµРІРµРЅС‚Р°
 	HealthComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
 
-	//Если выполняется на сервере
+	//Р•СЃР»Рё РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РЅР° СЃРµСЂРІРµСЂРµ
 	if (Role == ROLE_Authority)
 	{
-		//Задать параметры спавна оружия
+		//Р—Р°РґР°С‚СЊ РїР°СЂР°РјРµС‚СЂС‹ СЃРїР°РІРЅР° РѕСЂСѓР¶РёСЏ
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		//Спавнить оружие
+		//РЎРїР°РІРЅРёС‚СЊ РѕСЂСѓР¶РёРµ
 		CurrentWeapon = GetWorld()->SpawnActor<ASWeapon>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 
 		if (CurrentWeapon)
 		{
-			//назначить овнера оружия классом перса
+			//РЅР°Р·РЅР°С‡РёС‚СЊ РѕРІРЅРµСЂР° РѕСЂСѓР¶РёСЏ РєР»Р°СЃСЃРѕРј РїРµСЂСЃР°
 			CurrentWeapon->SetOwner(this);
 
-			//Присоединить оружие к мешу перса
+			//РџСЂРёСЃРѕРµРґРёРЅРёС‚СЊ РѕСЂСѓР¶РёРµ Рє РјРµС€Сѓ РїРµСЂСЃР°
 			CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
 		}
 	}
@@ -127,22 +127,22 @@ void ASCharacter::StopFire()
 void ASCharacter::OnHealthChanged(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
 
-	//Если ХП кончилось и перс не был мертв
+	//Р•СЃР»Рё РҐРџ РєРѕРЅС‡РёР»РѕСЃСЊ Рё РїРµСЂСЃ РЅРµ Р±С‹Р» РјРµСЂС‚РІ
 	if (Health <= 0.0f && !bIsDied)
 	{
 		//Pawn is died
 		bIsDied = true;
 
-		//Прекратить движение
+		//РџСЂРµРєСЂР°С‚РёС‚СЊ РґРІРёР¶РµРЅРёРµ
 		GetMovementComponent()->StopMovementImmediately();
 
-		//Выключить коллизии
+		//Р’С‹РєР»СЋС‡РёС‚СЊ РєРѕР»Р»РёР·РёРё
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-		//Запретить управление персом
+		//Р—Р°РїСЂРµС‚РёС‚СЊ СѓРїСЂР°РІР»РµРЅРёРµ РїРµСЂСЃРѕРј
 		DetachFromControllerPendingDestroy();
 
-		//Уничтожить объект перса через ... сек
+		//РЈРЅРёС‡С‚РѕР¶РёС‚СЊ РѕР±СЉРµРєС‚ РїРµСЂСЃР° С‡РµСЂРµР· ... СЃРµРє
 		SetLifeSpan(3.0f);
 	}
 }
@@ -152,10 +152,10 @@ void ASCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//Назначить конечный угол обзора
+	//РќР°Р·РЅР°С‡РёС‚СЊ РєРѕРЅРµС‡РЅС‹Р№ СѓРіРѕР» РѕР±Р·РѕСЂР°
 	float TargetFOV = bWantsToZoom ? ZoomedFOV : DefaultFOV;
 
-	//Плавно изменить угол обзора от CameraComp->FieldOfView до TargetFOV
+	//РџР»Р°РІРЅРѕ РёР·РјРµРЅРёС‚СЊ СѓРіРѕР» РѕР±Р·РѕСЂР° РѕС‚ CameraComp->FieldOfView РґРѕ TargetFOV
 	float CurrentFOV = FMath::FInterpTo(CameraComp->FieldOfView, TargetFOV, DeltaTime, ZoomInterpSpeed);
 	CameraComp->SetFieldOfView(CurrentFOV);
 }
