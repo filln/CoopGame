@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SHealthComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -18,7 +18,7 @@ void USHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//Если это сервер, задать евент MyOwner->OnTakeAnyDamage функцией HandleTakeAnyDamage
+	//Если владелец компонента на сервере, то задать евент MyOwner->OnTakeAnyDamage функцией HandleTakeAnyDamage
 	if (GetOwnerRole() == ROLE_Authority)
 	{
 		AActor* MyOwner = GetOwner();
@@ -45,6 +45,7 @@ void USHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 	OnHealthChanged.Broadcast(this, Health, Damage, DamageType, InstigatedBy, DamageCauser);
 }
 
+//Реплицировать данные
 void USHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

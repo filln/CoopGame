@@ -14,6 +14,7 @@
 ASCharacter::ASCharacter()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	//Разрешить евентТик
 	PrimaryActorTick.bCanEverTick = true;
 
 //создать спрингАрм
@@ -130,7 +131,7 @@ void ASCharacter::OnHealthChanged(USHealthComponent* OwningHealthComp, float Hea
 	//Если ХП кончилось и перс не был мертв
 	if (Health <= 0.0f && !bIsDied)
 	{
-		//Pawn is died
+		//Назначить перса мертвым
 		bIsDied = true;
 
 		//Прекратить движение
@@ -187,6 +188,7 @@ FVector ASCharacter::GetPawnViewLocation() const
 	return Super::GetPawnViewLocation();
 }
 
+//Реплицировать данные
 void ASCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

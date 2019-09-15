@@ -101,6 +101,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
+	//«абиндить управление клавиатурой и мышью
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 //¬з€ть координаты камеры или координты "глаз" персонажа
