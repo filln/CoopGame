@@ -1,4 +1,4 @@
-﻿ // Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 //Класс для описания взрываемых бочек. При получении повреждения бочка взрывается:
 	//меняется материал, спавнятся спецэффекты, бочка подпрыгивает, а к окружающим предметам применяется сила.

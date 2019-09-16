@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿ // Fill out your copyright notice in the Description page of Project Settings.
 
 //Компонент служит для хранения и изменения ХП, отслеживает получение дамага, меняет ХП после дамага и вызывает диспатчер OnHealthChanged
 
