@@ -1,6 +1,6 @@
- // Fill out your copyright notice in the Description page of Project Settings.
+п»ї// Fill out your copyright notice in the Description page of Project Settings.
 
-//Компонент служит для хранения и изменения ХП, отслеживает получение дамага, меняет ХП после дамага и вызывает диспатчер OnHealthChanged
+//РљРѕРјРїРѕРЅРµРЅС‚ СЃР»СѓР¶РёС‚ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ Рё РёР·РјРµРЅРµРЅРёСЏ РҐРџ, РѕС‚СЃР»РµР¶РёРІР°РµС‚ РїРѕР»СѓС‡РµРЅРёРµ РґР°РјР°РіР°, РјРµРЅСЏРµС‚ РҐРџ РїРѕСЃР»Рµ РґР°РјР°РіР° Рё РІС‹Р·С‹РІР°РµС‚ РґРёСЃРїР°С‚С‡РµСЂ OnHealthChanged
 
 #pragma once
 
@@ -8,7 +8,7 @@
 #include "Components/ActorComponent.h"
 #include "SHealthComponent.generated.h"
 
-//объявить евент-диспатчер, который вызывается, когда меняется Health
+//РѕР±СЉСЏРІРёС‚СЊ РµРІРµРЅС‚-РґРёСЃРїР°С‚С‡РµСЂ, РєРѕС‚РѕСЂС‹Р№ РІС‹Р·С‹РІР°РµС‚СЃСЏ, РєРѕРіРґР° РјРµРЅСЏРµС‚СЃСЏ Health
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FOnHealthChangeSignature, USHealthComponent*, HealthComp, float, Health, float, HealthDelta, const class UDamageType*, DamageType, 
 class AController*, InstigatedBy, AActor*, DamageCauser);
 
@@ -24,18 +24,18 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-//текущее ХП 
+//С‚РµРєСѓС‰РµРµ РҐРџ 
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "HealthComponent")
 		float Health;
-//дефолтное ХП
+//РґРµС„РѕР»С‚РЅРѕРµ РҐРџ
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HealthComponent")
 		float DefaultHealth;
-//получение дамага
+//РїРѕР»СѓС‡РµРЅРёРµ РґР°РјР°РіР°
 	UFUNCTION()
 		void HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 public:
-//объявить евент-диспатчер, который вызывается, когда меняется Health
+//РѕР±СЉСЏРІРёС‚СЊ РµРІРµРЅС‚-РґРёСЃРїР°С‚С‡РµСЂ, РєРѕС‚РѕСЂС‹Р№ РІС‹Р·С‹РІР°РµС‚СЃСЏ, РєРѕРіРґР° РјРµРЅСЏРµС‚СЃСЏ Health
 	UPROPERTY(BlueprintAssignable, Category = "Event")
 		FOnHealthChangeSignature OnHealthChanged;
 };

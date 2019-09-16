@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+п»ї// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SGrenadeProjectile.h"
 #include "Components/StaticMeshComponent.h"
@@ -14,39 +14,39 @@ ASGrenadeProjectile::ASGrenadeProjectile()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	//PrimaryActorTick.bCanEverTick = true;
 
-	//Создать меш
+	//РЎРѕР·РґР°С‚СЊ РјРµС€
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 
-	//Включить физику
+	//Р’РєР»СЋС‡РёС‚СЊ С„РёР·РёРєСѓ
 	MeshComp->SetSimulatePhysics(true);
 
-	//Назначить рутом
+	//РќР°Р·РЅР°С‡РёС‚СЊ СЂСѓС‚РѕРј
 	RootComponent = MeshComp;
 
-	//Создать объект компонента 
+	//РЎРѕР·РґР°С‚СЊ РѕР±СЉРµРєС‚ РєРѕРјРїРѕРЅРµРЅС‚Р° 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 
-	//Назначить компонент, к которому применяется движение
+	//РќР°Р·РЅР°С‡РёС‚СЊ РєРѕРјРїРѕРЅРµРЅС‚, Рє РєРѕС‚РѕСЂРѕРјСѓ РїСЂРёРјРµРЅСЏРµС‚СЃСЏ РґРІРёР¶РµРЅРёРµ
 	ProjectileMovement->UpdatedComponent = MeshComp;
 
-	//Начальная скорость
+	//РќР°С‡Р°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ
 	ProjectileMovement->InitialSpeed = 3000.f;
 
-	//Максимальная скорость
+	//РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ
 	ProjectileMovement->MaxSpeed = 3000.f;
 
-	//Вращать снаряд при движении
+	//Р’СЂР°С‰Р°С‚СЊ СЃРЅР°СЂСЏРґ РїСЂРё РґРІРёР¶РµРЅРёРё
 	ProjectileMovement->bRotationFollowsVelocity = true;
 
-	//Симулировать отскок снаряда от поверхности
+	//РЎРёРјСѓР»РёСЂРѕРІР°С‚СЊ РѕС‚СЃРєРѕРє СЃРЅР°СЂСЏРґР° РѕС‚ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё
 	ProjectileMovement->bShouldBounce = true;
 
 	DamageRadius = 100.0f;
 
-	//Назначить объект снаряда реплицируемым
+	//РќР°Р·РЅР°С‡РёС‚СЊ РѕР±СЉРµРєС‚ СЃРЅР°СЂСЏРґР° СЂРµРїР»РёС†РёСЂСѓРµРјС‹Рј
 	SetReplicates(true);
 
-	//Реплицировать движение объекта (ProjectileMovement)
+	//Р РµРїР»РёС†РёСЂРѕРІР°С‚СЊ РґРІРёР¶РµРЅРёРµ РѕР±СЉРµРєС‚Р° (ProjectileMovement)
 	SetReplicateMovement(true);
 
 }
@@ -67,7 +67,7 @@ ASGrenadeProjectile::ASGrenadeProjectile()
 
 void ASGrenadeProjectile::Explode()
 {
-	//Назначить Овнера для метода ApplyRadialDamage - тот, кто выпустил снаряд
+	//РќР°Р·РЅР°С‡РёС‚СЊ РћРІРЅРµСЂР° РґР»СЏ РјРµС‚РѕРґР° ApplyRadialDamage - С‚РѕС‚, РєС‚Рѕ РІС‹РїСѓСЃС‚РёР» СЃРЅР°СЂСЏРґ
 	AActor* MyOwner = GetOwner();
 	if (MyOwner == nullptr)
 	{
@@ -79,16 +79,16 @@ void ASGrenadeProjectile::Explode()
 		return;
 	}
 
-	//Спавн частиц взрыва
+	//РЎРїР°РІРЅ С‡Р°СЃС‚РёС† РІР·СЂС‹РІР°
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplodeEffect, GetActorLocation());
 
-	//Применить урон к объектам в радиусе DamageRadius
+	//РџСЂРёРјРµРЅРёС‚СЊ СѓСЂРѕРЅ Рє РѕР±СЉРµРєС‚Р°Рј РІ СЂР°РґРёСѓСЃРµ DamageRadius
 	UGameplayStatics::ApplyRadialDamage(GetWorld(), 100.0f, GetActorLocation(), DamageRadius, DamageType, IgnoreActors, this, MyOwner->GetInstigatorController());
 
-	//Нарисовать сферу для дебага - показывает сферу повреждений
+	//РќР°СЂРёСЃРѕРІР°С‚СЊ СЃС„РµСЂСѓ РґР»СЏ РґРµР±Р°РіР° - РїРѕРєР°Р·С‹РІР°РµС‚ СЃС„РµСЂСѓ РїРѕРІСЂРµР¶РґРµРЅРёР№
 	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 12, FColor::Yellow, false, 1.0f);
 	
-	//Уничтожить снаряд
+	//РЈРЅРёС‡С‚РѕР¶РёС‚СЊ СЃРЅР°СЂСЏРґ
 	Destroy();
 
 }

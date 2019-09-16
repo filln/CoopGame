@@ -1,6 +1,6 @@
- // Fill out your copyright notice in the Description page of Project Settings.
+п»ї// Fill out your copyright notice in the Description page of Project Settings.
 
-//родительский класс всех классов оружия. 
+//СЂРѕРґРёС‚РµР»СЊСЃРєРёР№ РєР»Р°СЃСЃ РІСЃРµС… РєР»Р°СЃСЃРѕРІ РѕСЂСѓР¶РёСЏ. 
 
 #pragma once
 
@@ -13,18 +13,18 @@ class UDamageType;
 class UParticleSystem;
 class UCameraShake;
 
-//Структура для хранения данных трейсинга, которые реплицируются
+//РЎС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РґР°РЅРЅС‹С… С‚СЂРµР№СЃРёРЅРіР°, РєРѕС‚РѕСЂС‹Рµ СЂРµРїР»РёС†РёСЂСѓСЋС‚СЃСЏ
 USTRUCT()
 struct FHitScanTrace
 {
 	GENERATED_BODY()
 
 public:
-//физический материал поверхности, которую достигает трейсинг
+//С„РёР·РёС‡РµСЃРєРёР№ РјР°С‚РµСЂРёР°Р» РїРѕРІРµСЂС…РЅРѕСЃС‚Рё, РєРѕС‚РѕСЂСѓСЋ РґРѕСЃС‚РёРіР°РµС‚ С‚СЂРµР№СЃРёРЅРі
 	UPROPERTY()
 		TEnumAsByte<EPhysicalSurface> SurfaceType;
 
-//конечная точка трейсинга
+//РєРѕРЅРµС‡РЅР°СЏ С‚РѕС‡РєР° С‚СЂРµР№СЃРёРЅРіР°
 	UPROPERTY()
 		FVector_NetQuantize TraceTo;
 };
@@ -41,90 +41,90 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	//Меш
+	//РњРµС€
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		USkeletalMeshComponent* MeshComp;
 
-	//Класс компонента для описания повреждений - задается в редакторе как тип повреждений
+	//РљР»Р°СЃСЃ РєРѕРјРїРѕРЅРµРЅС‚Р° РґР»СЏ РѕРїРёСЃР°РЅРёСЏ РїРѕРІСЂРµР¶РґРµРЅРёР№ - Р·Р°РґР°РµС‚СЃСЏ РІ СЂРµРґР°РєС‚РѕСЂРµ РєР°Рє С‚РёРї РїРѕРІСЂРµР¶РґРµРЅРёР№
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 		TSubclassOf<UDamageType> DamageType;
 
-	//Название сокета на оружии
+	//РќР°Р·РІР°РЅРёРµ СЃРѕРєРµС‚Р° РЅР° РѕСЂСѓР¶РёРё
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 		FName MuzzleSocketName;
 
-	//Имя параметра частиц эффекта трейсинга при выстреле TracerEffect
+	//РРјСЏ РїР°СЂР°РјРµС‚СЂР° С‡Р°СЃС‚РёС† СЌС„С„РµРєС‚Р° С‚СЂРµР№СЃРёРЅРіР° РїСЂРё РІС‹СЃС‚СЂРµР»Рµ TracerEffect
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 		FName TracerTargetName;
 
-	//Частицы эффекта выстрела на оружии
+	//Р§Р°СЃС‚РёС†С‹ СЌС„С„РµРєС‚Р° РІС‹СЃС‚СЂРµР»Р° РЅР° РѕСЂСѓР¶РёРё
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 		UParticleSystem* MuzzleEffect;
 
-	//Дефолтные эффекты выстрела на поверхности
+	//Р”РµС„РѕР»С‚РЅС‹Рµ СЌС„С„РµРєС‚С‹ РІС‹СЃС‚СЂРµР»Р° РЅР° РїРѕРІРµСЂС…РЅРѕСЃС‚Рё
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 		UParticleSystem* DefaultImpactEffect;
 
-	//Эффекты выстрела на поверхности с определенным материалом
+	//Р­С„С„РµРєС‚С‹ РІС‹СЃС‚СЂРµР»Р° РЅР° РїРѕРІРµСЂС…РЅРѕСЃС‚Рё СЃ РѕРїСЂРµРґРµР»РµРЅРЅС‹Рј РјР°С‚РµСЂРёР°Р»РѕРј
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 		UParticleSystem* FleshImpactEffect;
 
-	//Эффект трейсинга при выстреле - линия по лучу трейсинга
+	//Р­С„С„РµРєС‚ С‚СЂРµР№СЃРёРЅРіР° РїСЂРё РІС‹СЃС‚СЂРµР»Рµ - Р»РёРЅРёСЏ РїРѕ Р»СѓС‡Сѓ С‚СЂРµР№СЃРёРЅРіР°
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 		UParticleSystem* TracerEffect;
 
-	//Длина трейсинга
+	//Р”Р»РёРЅР° С‚СЂРµР№СЃРёРЅРіР°
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 		float LenghtTracing;
 
-	//Базовый дамаг
+	//Р‘Р°Р·РѕРІС‹Р№ РґР°РјР°Рі
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 		float BaseDamage;
 
-	//Показать эффекты от выстрела
+	//РџРѕРєР°Р·Р°С‚СЊ СЌС„С„РµРєС‚С‹ РѕС‚ РІС‹СЃС‚СЂРµР»Р°
 	void PlayFireEffects(FVector TracerEndPoint);
 
-	//Показать эффекты от выстрела на поверхности
+	//РџРѕРєР°Р·Р°С‚СЊ СЌС„С„РµРєС‚С‹ РѕС‚ РІС‹СЃС‚СЂРµР»Р° РЅР° РїРѕРІРµСЂС…РЅРѕСЃС‚Рё
 	void PlayImpactEffects(EPhysicalSurface SurfaceType, FVector ImpactPoint);
 
-	//Тряска камеры при выстреле
+	//РўСЂСЏСЃРєР° РєР°РјРµСЂС‹ РїСЂРё РІС‹СЃС‚СЂРµР»Рµ
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 		TSubclassOf<UCameraShake> FireCamShake;
 
-	//Выстрел
+	//Р’С‹СЃС‚СЂРµР»
 	virtual void Fire();
 
-	//Выстрел на сервере
+	//Р’С‹СЃС‚СЂРµР» РЅР° СЃРµСЂРІРµСЂРµ
 	UFUNCTION(Server, Reliable, WithValidation)
 		void ServerFire();
 
-	//Таймер для автоматического выстрела
+	//РўР°Р№РјРµСЂ РґР»СЏ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРіРѕ РІС‹СЃС‚СЂРµР»Р°
 	FTimerHandle TimerHandle_TimeBetweenShots;
 
-	//Время последнего выстрела
+	//Р’СЂРµРјСЏ РїРѕСЃР»РµРґРЅРµРіРѕ РІС‹СЃС‚СЂРµР»Р°
 	float LastFireTime;
 
-	//Частота выстрела - количество пуль в 1 минуту
+	//Р§Р°СЃС‚РѕС‚Р° РІС‹СЃС‚СЂРµР»Р° - РєРѕР»РёС‡РµСЃС‚РІРѕ РїСѓР»СЊ РІ 1 РјРёРЅСѓС‚Сѓ
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 		float RateOfFire;
 
-	//Время между выстрелами
+	//Р’СЂРµРјСЏ РјРµР¶РґСѓ РІС‹СЃС‚СЂРµР»Р°РјРё
 	float TimeBetweenShots;
 
-	//Структура для репликации 
+	//РЎС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ СЂРµРїР»РёРєР°С†РёРё 
 	UPROPERTY(ReplicatedUsing = OnRep_HitScanTrace)
 		FHitScanTrace HitScanTrace;
 
-	//Выполняется на клиенте, когда HitScanTrace реплицируется 
+	//Р’С‹РїРѕР»РЅСЏРµС‚СЃСЏ РЅР° РєР»РёРµРЅС‚Рµ, РєРѕРіРґР° HitScanTrace СЂРµРїР»РёС†РёСЂСѓРµС‚СЃСЏ 
 	UFUNCTION()
 		void OnRep_HitScanTrace();
 
 public:	
 
-	//Начать стрельбу
+	//РќР°С‡Р°С‚СЊ СЃС‚СЂРµР»СЊР±Сѓ
 	void StartFire();
 
-	//Закончить стрельбу
+	//Р—Р°РєРѕРЅС‡РёС‚СЊ СЃС‚СЂРµР»СЊР±Сѓ
 	void StopFire();
 
 };

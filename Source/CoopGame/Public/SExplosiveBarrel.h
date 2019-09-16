@@ -1,7 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+п»ї // Fill out your copyright notice in the Description page of Project Settings.
 
-//Класс для описания взрываемых бочек. При получении повреждения бочка взрывается:
-	//меняется материал, спавнятся спецэффекты, бочка подпрыгивает, а к окружающим предметам применяется сила.
+//РљР»Р°СЃСЃ РґР»СЏ РѕРїРёСЃР°РЅРёСЏ РІР·СЂС‹РІР°РµРјС‹С… Р±РѕС‡РµРє. РџСЂРё РїРѕР»СѓС‡РµРЅРёРё РїРѕРІСЂРµР¶РґРµРЅРёСЏ Р±РѕС‡РєР° РІР·СЂС‹РІР°РµС‚СЃСЏ:
+	//РјРµРЅСЏРµС‚СЃСЏ РјР°С‚РµСЂРёР°Р», СЃРїР°РІРЅСЏС‚СЃСЏ СЃРїРµС†СЌС„С„РµРєС‚С‹, Р±РѕС‡РєР° РїРѕРґРїСЂС‹РіРёРІР°РµС‚, Р° Рє РѕРєСЂСѓР¶Р°СЋС‰РёРј РїСЂРµРґРјРµС‚Р°Рј РїСЂРёРјРµРЅСЏРµС‚СЃСЏ СЃРёР»Р°.
 
 #pragma once
 
@@ -27,40 +27,40 @@ public:
 
 protected:
 
-	//Меш
+	//РњРµС€
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 		UStaticMeshComponent* MeshComp;
 
-	//Компонент для хранения и изменения ХП
+	//РљРѕРјРїРѕРЅРµРЅС‚ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ Рё РёР·РјРµРЅРµРЅРёСЏ РҐРџ
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 		USHealthComponent* HealthComp;
 
-	//Компонент для применения силы к окружающим объектам
+	//РљРѕРјРїРѕРЅРµРЅС‚ РґР»СЏ РїСЂРёРјРµРЅРµРЅРёСЏ СЃРёР»С‹ Рє РѕРєСЂСѓР¶Р°СЋС‰РёРј РѕР±СЉРµРєС‚Р°Рј
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 		URadialForceComponent* RadialForceComp;
 
-	//Эффект взрыва
+	//Р­С„С„РµРєС‚ РІР·СЂС‹РІР°
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
 		UParticleSystem* ExplosionEffects;
 
-	//Материал, применяемый на взорванных бочках
+	//РњР°С‚РµСЂРёР°Р», РїСЂРёРјРµРЅСЏРµРјС‹Р№ РЅР° РІР·РѕСЂРІР°РЅРЅС‹С… Р±РѕС‡РєР°С…
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
 		UMaterialInterface* ExplodedMaterial;
 
-	//Импульс, применяемый к бочке во время взрыва
+	//РРјРїСѓР»СЊСЃ, РїСЂРёРјРµРЅСЏРµРјС‹Р№ Рє Р±РѕС‡РєРµ РІРѕ РІСЂРµРјСЏ РІР·СЂС‹РІР°
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
 		float ExplosionImpulse;
 
-	//Была взорвана?
+	//Р‘С‹Р»Р° РІР·РѕСЂРІР°РЅР°?
 	bool bExploded;
 
 protected:
 
-	//Функция для перегрузки евента HealthComp->OnHealthChanged
+	//Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРµСЂРµРіСЂСѓР·РєРё РµРІРµРЅС‚Р° HealthComp->OnHealthChanged
 	UFUNCTION()
 		void OnHealthChanged(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
-	//Эффекты взрыва
+	//Р­С„С„РµРєС‚С‹ РІР·СЂС‹РІР°
 	void Exploded();
 
 

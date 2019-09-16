@@ -1,6 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+п»ї // Fill out your copyright notice in the Description page of Project Settings.
 
-//Класс снарядов для оружия SProjectileWeapon
+//РљР»Р°СЃСЃ СЃРЅР°СЂСЏРґРѕРІ РґР»СЏ РѕСЂСѓР¶РёСЏ SProjectileWeapon
 
 #pragma once
 
@@ -31,31 +31,31 @@ public:
 
 protected:
 
-	//Меш
+	//РњРµС€
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		UStaticMeshComponent* MeshComp;
 
-	//Компонент для описания движения снарядов
+	//РљРѕРјРїРѕРЅРµРЅС‚ РґР»СЏ РѕРїРёСЃР°РЅРёСЏ РґРІРёР¶РµРЅРёСЏ СЃРЅР°СЂСЏРґРѕРІ
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		UProjectileMovementComponent* ProjectileMovement;
 
-	//Еффекты взрыва
+	//Р•С„С„РµРєС‚С‹ РІР·СЂС‹РІР°
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 		UParticleSystem* ExplodeEffect;
 
-	//Класс компонента для описания повреждений - задается в редакторе как тип повреждений
+	//РљР»Р°СЃСЃ РєРѕРјРїРѕРЅРµРЅС‚Р° РґР»СЏ РѕРїРёСЃР°РЅРёСЏ РїРѕРІСЂРµР¶РґРµРЅРёР№ - Р·Р°РґР°РµС‚СЃСЏ РІ СЂРµРґР°РєС‚РѕСЂРµ РєР°Рє С‚РёРї РїРѕРІСЂРµР¶РґРµРЅРёР№
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 		TSubclassOf<UDamageType> DamageType;
 
-	//Радиус повреждений при взрыве
+	//Р Р°РґРёСѓСЃ РїРѕРІСЂРµР¶РґРµРЅРёР№ РїСЂРё РІР·СЂС‹РІРµ
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 		float DamageRadius;
 
-	//Массив акторов, которые игнорируются при взрыве
+	//РњР°СЃСЃРёРІ Р°РєС‚РѕСЂРѕРІ, РєРѕС‚РѕСЂС‹Рµ РёРіРЅРѕСЂРёСЂСѓСЋС‚СЃСЏ РїСЂРё РІР·СЂС‹РІРµ
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 		TArray<AActor*> IgnoreActors;
 
-	//Взрыв снаряда
+	//Р’Р·СЂС‹РІ СЃРЅР°СЂСЏРґР°
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 		void Explode();
 

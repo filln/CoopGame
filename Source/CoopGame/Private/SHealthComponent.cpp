@@ -1,4 +1,4 @@
- // Fill out your copyright notice in the Description page of Project Settings.
+п»ї  // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SHealthComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -8,7 +8,7 @@ USHealthComponent::USHealthComponent()
 {
 	DefaultHealth = 100;
 
-	//Объект можно передавать по сети
+	//РћР±СЉРµРєС‚ РјРѕР¶РЅРѕ РїРµСЂРµРґР°РІР°С‚СЊ РїРѕ СЃРµС‚Рё
 	SetIsReplicated(true);
 }
 
@@ -18,7 +18,7 @@ void USHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//Если владелец компонента на сервере, то задать евент MyOwner->OnTakeAnyDamage функцией HandleTakeAnyDamage
+	//Р•СЃР»Рё РІР»Р°РґРµР»РµС† РєРѕРјРїРѕРЅРµРЅС‚Р° РЅР° СЃРµСЂРІРµСЂРµ, С‚Рѕ Р·Р°РґР°С‚СЊ РµРІРµРЅС‚ MyOwner->OnTakeAnyDamage С„СѓРЅРєС†РёРµР№ HandleTakeAnyDamage
 	if (GetOwnerRole() == ROLE_Authority)
 	{
 		AActor* MyOwner = GetOwner();
@@ -38,14 +38,14 @@ void USHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 	{
 		return;
 	}
-//Изменить ХП получением дамага, Clamp ограничит итоговое ХП между 0.0f и DefaultHealth
+//РР·РјРµРЅРёС‚СЊ РҐРџ РїРѕР»СѓС‡РµРЅРёРµРј РґР°РјР°РіР°, Clamp РѕРіСЂР°РЅРёС‡РёС‚ РёС‚РѕРіРѕРІРѕРµ РҐРџ РјРµР¶РґСѓ 0.0f Рё DefaultHealth
 	Health = FMath::Clamp(Health - Damage, 0.0f, DefaultHealth);
 	UE_LOG(LogTemp, Log, TEXT("Health changed: %s"), *FString::SanitizeFloat(Health));
-//Вызвать диспатчер OnHealthChanged
+//Р’С‹Р·РІР°С‚СЊ РґРёСЃРїР°С‚С‡РµСЂ OnHealthChanged
 	OnHealthChanged.Broadcast(this, Health, Damage, DamageType, InstigatedBy, DamageCauser);
 }
 
-//Реплицировать данные
+//Р РµРїР»РёС†РёСЂРѕРІР°С‚СЊ РґР°РЅРЅС‹Рµ
 void USHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

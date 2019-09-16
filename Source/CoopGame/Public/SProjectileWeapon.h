@@ -1,6 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+п»ї // Fill out your copyright notice in the Description page of Project Settings.
 
-//Класс для оружия, которое стреляет снарядами класса ProjectileClass
+//РљР»Р°СЃСЃ РґР»СЏ РѕСЂСѓР¶РёСЏ, РєРѕС‚РѕСЂРѕРµ СЃС‚СЂРµР»СЏРµС‚ СЃРЅР°СЂСЏРґР°РјРё РєР»Р°СЃСЃР° ProjectileClass
 
 #pragma once
 
@@ -18,10 +18,10 @@ class COOPGAME_API ASProjectileWeapon : public ASWeapon
 
 protected:
 
-	//Стрельба
+	//РЎС‚СЂРµР»СЊР±Р°
 	virtual void Fire() override;
 
-	//Класс снаряда, задается в редакторе как тип снаряда
+	//РљР»Р°СЃСЃ СЃРЅР°СЂСЏРґР°, Р·Р°РґР°РµС‚СЃСЏ РІ СЂРµРґР°РєС‚РѕСЂРµ РєР°Рє С‚РёРї СЃРЅР°СЂСЏРґР°
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 		TSubclassOf<AActor> ProjectileClass;
 	

@@ -1,16 +1,16 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿ // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Engine/GameEngine.h" //UE_LOG()
 
-//Òèïû äëÿ ôèç. ìàòåðèàëîâ
+//Ð¢Ð¸Ð¿Ñ‹ Ð´Ð»Ñ Ñ„Ð¸Ð·. Ð¼Ð°Ñ‚ÐµÑ€Ð¸Ð°Ð»Ð¾Ð²
 #define SUFRACE_FLESHDEFAULT		SurfaceType1
 #define SURFACE_FLESHVULNERABLE		SurfaceType2
 
-//Òèï òðåéñ-êàíàëà êîëëèçèè
+//Ð¢Ð¸Ð¿ Ñ‚Ñ€ÐµÐ¹Ñ-ÐºÐ°Ð½Ð°Ð»Ð° ÐºÐ¾Ð»Ð»Ð¸Ð·Ð¸Ð¸
 #define COLLISION_WEAPON			ECC_GameTraceChannel1
 
-//Íàïå÷àòàòü ñîîáùåíèå â îêíî èãðû è â ëîã
+//ÐÐ°Ð¿ÐµÑ‡Ð°Ñ‚Ð°Ñ‚ÑŒ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ð² Ð¾ÐºÐ½Ð¾ Ð¸Ð³Ñ€Ñ‹ Ð¸ Ð² Ð»Ð¾Ð³
 #define DEBUGMESSAGE(CustomString) UE_LOG(LogTemp, Log, TEXT(CustomString)); if(GEngine) {GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TEXT(CustomString));}

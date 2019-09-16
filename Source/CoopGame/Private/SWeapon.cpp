@@ -1,4 +1,4 @@
- // Fill out your copyright notice in the Description page of Project Settings.
+п»ї// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SWeapon.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -11,7 +11,7 @@
 #include "TimerManager.h"
 #include "Net/UnrealNetwork.h"
 
-//Консольная команда для отрисовки трейсинга (дебаг-линии)
+//РљРѕРЅСЃРѕР»СЊРЅР°СЏ РєРѕРјР°РЅРґР° РґР»СЏ РѕС‚СЂРёСЃРѕРІРєРё С‚СЂРµР№СЃРёРЅРіР° (РґРµР±Р°Рі-Р»РёРЅРёРё)
 static int32 DebugWeaponDrawing = 0;
 FAutoConsoleVariableRef CVARDebugWeaponDriwing(
 	TEXT("COOP.DebugWeaponDrawing"), 
@@ -22,10 +22,10 @@ FAutoConsoleVariableRef CVARDebugWeaponDriwing(
 // Sets default values
 ASWeapon::ASWeapon()
 {
-	//Создать меш
+	//РЎРѕР·РґР°С‚СЊ РјРµС€
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComp"));
 
-	//Назначить рутом
+	//РќР°Р·РЅР°С‡РёС‚СЊ СЂСѓС‚РѕРј
 	RootComponent = MeshComp;
 
 	MuzzleSocketName = "MuzzleSocket";
@@ -35,13 +35,13 @@ ASWeapon::ASWeapon()
 	RateOfFire = 600;
 	LenghtTracing = 10000;
 	
-	//Объект можно передавать по сети
+	//РћР±СЉРµРєС‚ РјРѕР¶РЅРѕ РїРµСЂРµРґР°РІР°С‚СЊ РїРѕ СЃРµС‚Рё
 	SetReplicates(true);
 
-	//Как часто этот объект будет реплицироваться
+	//РљР°Рє С‡Р°СЃС‚Рѕ СЌС‚РѕС‚ РѕР±СЉРµРєС‚ Р±СѓРґРµС‚ СЂРµРїР»РёС†РёСЂРѕРІР°С‚СЊСЃСЏ
 	NetUpdateFrequency = 66.0f;
 
-	//Как часто этот объект будет реплицироваться при нечастом изменении реплицируемых свойств
+	//РљР°Рє С‡Р°СЃС‚Рѕ СЌС‚РѕС‚ РѕР±СЉРµРєС‚ Р±СѓРґРµС‚ СЂРµРїР»РёС†РёСЂРѕРІР°С‚СЊСЃСЏ РїСЂРё РЅРµС‡Р°СЃС‚РѕРј РёР·РјРµРЅРµРЅРёРё СЂРµРїР»РёС†РёСЂСѓРµРјС‹С… СЃРІРѕР№СЃС‚РІ
 	MinNetUpdateFrequency = 33.0f;
 }
 
@@ -55,114 +55,114 @@ void ASWeapon::BeginPlay()
 
 void ASWeapon::Fire()
 {
-	//Если выполняется на клиенте
+	//Р•СЃР»Рё РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РЅР° РєР»РёРµРЅС‚Рµ
 	if (Role < ROLE_Authority)
 	{
-		//Выполнить на сервере
+		//Р’С‹РїРѕР»РЅРёС‚СЊ РЅР° СЃРµСЂРІРµСЂРµ
 		ServerFire();
 	}
 
-	//Взять овнера - владельца оружия
+	//Р’Р·СЏС‚СЊ РѕРІРЅРµСЂР° - РІР»Р°РґРµР»СЊС†Р° РѕСЂСѓР¶РёСЏ
 	AActor* MyOwner = GetOwner();
 	if (MyOwner == nullptr)
 	{
 		return;
 	}
 	   
-	//Структура для данных, получаемых при трейсинге
+	//РЎС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ РґР°РЅРЅС‹С…, РїРѕР»СѓС‡Р°РµРјС‹С… РїСЂРё С‚СЂРµР№СЃРёРЅРіРµ
 	FHitResult Hit;
 
-	//точка "глаз" овнера
+	//С‚РѕС‡РєР° "РіР»Р°Р·" РѕРІРЅРµСЂР°
 	FVector EyeStart;
 
-	//Направление взгляда
+	//РќР°РїСЂР°РІР»РµРЅРёРµ РІР·РіР»СЏРґР°
 	FRotator EyeRotation;
 
-	//Определить вектор и ротатор EyeStart и EyeRotation
+	//РћРїСЂРµРґРµР»РёС‚СЊ РІРµРєС‚РѕСЂ Рё СЂРѕС‚Р°С‚РѕСЂ EyeStart Рё EyeRotation
 	MyOwner->GetActorEyesViewPoint(EyeStart, EyeRotation);
 
-	//Единичный вектор, направленный в сторону ротатора EyeRotation
+	//Р•РґРёРЅРёС‡РЅС‹Р№ РІРµРєС‚РѕСЂ, РЅР°РїСЂР°РІР»РµРЅРЅС‹Р№ РІ СЃС‚РѕСЂРѕРЅСѓ СЂРѕС‚Р°С‚РѕСЂР° EyeRotation
 	FVector ShotDirection = EyeRotation.Vector();
 
-	//Найти конечную точку трейсинга
+	//РќР°Р№С‚Рё РєРѕРЅРµС‡РЅСѓСЋ С‚РѕС‡РєСѓ С‚СЂРµР№СЃРёРЅРіР°
 	FVector TraceEnd = EyeStart + (ShotDirection * LenghtTracing);
 
-	//Параметры коллизии
+	//РџР°СЂР°РјРµС‚СЂС‹ РєРѕР»Р»РёР·РёРё
 	FCollisionQueryParams QueryParams;
 
-	//Игнорировать Овнера
+	//РРіРЅРѕСЂРёСЂРѕРІР°С‚СЊ РћРІРЅРµСЂР°
 	QueryParams.AddIgnoredActor(MyOwner);
 
-	//Игнорировать себя
+	//РРіРЅРѕСЂРёСЂРѕРІР°С‚СЊ СЃРµР±СЏ
 	QueryParams.AddIgnoredActor(this);
 
-	//Трейсить комплексную коллизию (собственную коллизию меша)
+	//РўСЂРµР№СЃРёС‚СЊ РєРѕРјРїР»РµРєСЃРЅСѓСЋ РєРѕР»Р»РёР·РёСЋ (СЃРѕР±СЃС‚РІРµРЅРЅСѓСЋ РєРѕР»Р»РёР·РёСЋ РјРµС€Р°)
 	QueryParams.bTraceComplex = true;
 
-	//Возвращать физический материал при результате
+	//Р’РѕР·РІСЂР°С‰Р°С‚СЊ С„РёР·РёС‡РµСЃРєРёР№ РјР°С‚РµСЂРёР°Р» РїСЂРё СЂРµР·СѓР»СЊС‚Р°С‚Рµ
 	QueryParams.bReturnPhysicalMaterial = true;
 
-	//Запомнить для изменения
+	//Р—Р°РїРѕРјРЅРёС‚СЊ РґР»СЏ РёР·РјРµРЅРµРЅРёСЏ
 	FVector TracerEndPoint = TraceEnd;
 
-	//Определить физ. материал по умолчанию
+	//РћРїСЂРµРґРµР»РёС‚СЊ С„РёР·. РјР°С‚РµСЂРёР°Р» РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 	EPhysicalSurface SurfaceType = SurfaceType_Default;
 
-	//Трейсинг, если удался
+	//РўСЂРµР№СЃРёРЅРі, РµСЃР»Рё СѓРґР°Р»СЃСЏ
 	if (GetWorld()->LineTraceSingleByChannel(Hit, EyeStart, TraceEnd, COLLISION_WEAPON, QueryParams))
 	{
-		//Получить попавшегося актора
+		//РџРѕР»СѓС‡РёС‚СЊ РїРѕРїР°РІС€РµРіРѕСЃСЏ Р°РєС‚РѕСЂР°
 		AActor* HitActor = Hit.GetActor();
 
-		//Получить физ. материал 
+		//РџРѕР»СѓС‡РёС‚СЊ С„РёР·. РјР°С‚РµСЂРёР°Р» 
 		SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
 
-		//Текущий урон
+		//РўРµРєСѓС‰РёР№ СѓСЂРѕРЅ
 		float CurrentDamage = BaseDamage;
 
-		//Если заданный материал, то увеличить урон (хедшот)
+		//Р•СЃР»Рё Р·Р°РґР°РЅРЅС‹Р№ РјР°С‚РµСЂРёР°Р», С‚Рѕ СѓРІРµР»РёС‡РёС‚СЊ СѓСЂРѕРЅ (С…РµРґС€РѕС‚)
 		if (SurfaceType == SURFACE_FLESHVULNERABLE)
 		{
 			CurrentDamage *= 4.0f;
 		}
 
-		//Применить урон к HitActor
+		//РџСЂРёРјРµРЅРёС‚СЊ СѓСЂРѕРЅ Рє HitActor
 		UGameplayStatics::ApplyPointDamage(HitActor, CurrentDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
 
-		//Получить текущую точку трейсинга
+		//РџРѕР»СѓС‡РёС‚СЊ С‚РµРєСѓС‰СѓСЋ С‚РѕС‡РєСѓ С‚СЂРµР№СЃРёРЅРіР°
 		TracerEndPoint = Hit.ImpactPoint;
 
-		//Показать эффекты от выстрела на поверхности
+		//РџРѕРєР°Р·Р°С‚СЊ СЌС„С„РµРєС‚С‹ РѕС‚ РІС‹СЃС‚СЂРµР»Р° РЅР° РїРѕРІРµСЂС…РЅРѕСЃС‚Рё
 		PlayImpactEffects(SurfaceType, TracerEndPoint);
 	}
 
-	//Если задано в консоли, отрисовать дебаг-линию
+	//Р•СЃР»Рё Р·Р°РґР°РЅРѕ РІ РєРѕРЅСЃРѕР»Рё, РѕС‚СЂРёСЃРѕРІР°С‚СЊ РґРµР±Р°Рі-Р»РёРЅРёСЋ
 	if (DebugWeaponDrawing > 0)
 	{
 		DrawDebugLine(GetWorld(), EyeStart, TraceEnd, FColor::White, false, 1.0f, 0, 1.0f);
 	}
 
-	//Показать эффекты от выстрела на оружии
+	//РџРѕРєР°Р·Р°С‚СЊ СЌС„С„РµРєС‚С‹ РѕС‚ РІС‹СЃС‚СЂРµР»Р° РЅР° РѕСЂСѓР¶РёРё
 	PlayFireEffects(TracerEndPoint);
 
-	//Если это сервер, заполнить структуру для передачи по клиентам
+	//Р•СЃР»Рё СЌС‚Рѕ СЃРµСЂРІРµСЂ, Р·Р°РїРѕР»РЅРёС‚СЊ СЃС‚СЂСѓРєС‚СѓСЂСѓ РґР»СЏ РїРµСЂРµРґР°С‡Рё РїРѕ РєР»РёРµРЅС‚Р°Рј
 	if (Role == ROLE_Authority)
 	{
 		HitScanTrace.TraceTo = TracerEndPoint;
 		HitScanTrace.SurfaceType = SurfaceType;
 	}
 
-	//Запомнить время последнего выстрела
+	//Р—Р°РїРѕРјРЅРёС‚СЊ РІСЂРµРјСЏ РїРѕСЃР»РµРґРЅРµРіРѕ РІС‹СЃС‚СЂРµР»Р°
 	LastFireTime = GetWorld()->TimeSeconds;
 }
 
-//Выполнять на сервере
+//Р’С‹РїРѕР»РЅСЏС‚СЊ РЅР° СЃРµСЂРІРµСЂРµ
 void ASWeapon::ServerFire_Implementation()
 {
 	Fire();
 }
 
-//Выполнять на сервере?
+//Р’С‹РїРѕР»РЅСЏС‚СЊ РЅР° СЃРµСЂРІРµСЂРµ?
 bool ASWeapon::ServerFire_Validate()
 {
 	return true;
@@ -170,10 +170,10 @@ bool ASWeapon::ServerFire_Validate()
 
 void ASWeapon::OnRep_HitScanTrace()
 {
-	//Показать эффекты от выстрела на оружии
+	//РџРѕРєР°Р·Р°С‚СЊ СЌС„С„РµРєС‚С‹ РѕС‚ РІС‹СЃС‚СЂРµР»Р° РЅР° РѕСЂСѓР¶РёРё
 	PlayFireEffects(HitScanTrace.TraceTo);
 
-	//Показать эффекты от выстрела на поверхности
+	//РџРѕРєР°Р·Р°С‚СЊ СЌС„С„РµРєС‚С‹ РѕС‚ РІС‹СЃС‚СЂРµР»Р° РЅР° РїРѕРІРµСЂС…РЅРѕСЃС‚Рё
 	PlayImpactEffects(HitScanTrace.SurfaceType, HitScanTrace.TraceTo);
 
 }
@@ -181,47 +181,47 @@ void ASWeapon::OnRep_HitScanTrace()
 void ASWeapon::StartFire()
 {
 	/*
-	Рассчитать задержку перед работой таймера, ограничить результат >=0.0f. Если перерыв между стрельбой (LastFireTime - GetWorld()->TimeSeconds)
-	больше, чем время между выстрелами TimeBetweenShots, то задержка = 0. 
-	Если перерыв меньше, то будет небольшая задержка больше 0 и меньше, чем TimeBetweenShots
+	Р Р°СЃСЃС‡РёС‚Р°С‚СЊ Р·Р°РґРµСЂР¶РєСѓ РїРµСЂРµРґ СЂР°Р±РѕС‚РѕР№ С‚Р°Р№РјРµСЂР°, РѕРіСЂР°РЅРёС‡РёС‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚ >=0.0f. Р•СЃР»Рё РїРµСЂРµСЂС‹РІ РјРµР¶РґСѓ СЃС‚СЂРµР»СЊР±РѕР№ (LastFireTime - GetWorld()->TimeSeconds)
+	Р±РѕР»СЊС€Рµ, С‡РµРј РІСЂРµРјСЏ РјРµР¶РґСѓ РІС‹СЃС‚СЂРµР»Р°РјРё TimeBetweenShots, С‚Рѕ Р·Р°РґРµСЂР¶РєР° = 0. 
+	Р•СЃР»Рё РїРµСЂРµСЂС‹РІ РјРµРЅСЊС€Рµ, С‚Рѕ Р±СѓРґРµС‚ РЅРµР±РѕР»СЊС€Р°СЏ Р·Р°РґРµСЂР¶РєР° Р±РѕР»СЊС€Рµ 0 Рё РјРµРЅСЊС€Рµ, С‡РµРј TimeBetweenShots
 	*/
 	float FirstDelay = FMath::Max( TimeBetweenShots + LastFireTime - GetWorld()->TimeSeconds, 0.0f);
 
-	//Запустить таймер, по которому выполняется Fire() - стрельба
+	//Р—Р°РїСѓСЃС‚РёС‚СЊ С‚Р°Р№РјРµСЂ, РїРѕ РєРѕС‚РѕСЂРѕРјСѓ РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ Fire() - СЃС‚СЂРµР»СЊР±Р°
 	GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, TimeBetweenShots, true, FirstDelay);
 }
 
 void ASWeapon::StopFire()
 {
-	//Удалить таймер
+	//РЈРґР°Р»РёС‚СЊ С‚Р°Р№РјРµСЂ
 	GetWorldTimerManager().ClearTimer(TimerHandle_TimeBetweenShots);
 }
 
 void ASWeapon::PlayFireEffects(FVector TracerEndPoint)
 {
-	//Спавнить приатаченные к MeshComp частицы в сокете
+	//РЎРїР°РІРЅРёС‚СЊ РїСЂРёР°С‚Р°С‡РµРЅРЅС‹Рµ Рє MeshComp С‡Р°СЃС‚РёС†С‹ РІ СЃРѕРєРµС‚Рµ
 	if (MuzzleEffect)
 	{
 		UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, MeshComp, MuzzleSocketName);
 	}
 
-	//Спавнить частицы эффекта трейсинга
+	//РЎРїР°РІРЅРёС‚СЊ С‡Р°СЃС‚РёС†С‹ СЌС„С„РµРєС‚Р° С‚СЂРµР№СЃРёРЅРіР°
 	if (TracerEffect)
 	{
-		//Взять точку сокета
+		//Р’Р·СЏС‚СЊ С‚РѕС‡РєСѓ СЃРѕРєРµС‚Р°
 		FVector MuzzleSocketLocation = MeshComp->GetSocketLocation(MuzzleSocketName);
 
-		//Спавнить частицы в сокете
+		//РЎРїР°РІРЅРёС‚СЊ С‡Р°СЃС‚РёС†С‹ РІ СЃРѕРєРµС‚Рµ
 		UParticleSystemComponent* TracerComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TracerEffect, MuzzleSocketLocation);
 
 		if (TracerComp)
 		{
-			//Вытянуть частицы до точки конца трейсинга
+			//Р’С‹С‚СЏРЅСѓС‚СЊ С‡Р°СЃС‚РёС†С‹ РґРѕ С‚РѕС‡РєРё РєРѕРЅС†Р° С‚СЂРµР№СЃРёРЅРіР°
 			TracerComp->SetVectorParameter(TracerTargetName, TracerEndPoint);
 		}
 	}
 
-	//Создать эффект тряски камеры
+	//РЎРѕР·РґР°С‚СЊ СЌС„С„РµРєС‚ С‚СЂСЏСЃРєРё РєР°РјРµСЂС‹
 	APawn* MyOwner = Cast<APawn>(GetOwner());
 	if (MyOwner)
 	{
@@ -235,10 +235,10 @@ void ASWeapon::PlayFireEffects(FVector TracerEndPoint)
 
 void ASWeapon::PlayImpactEffects(EPhysicalSurface SurfaceType, FVector ImpactPoint)
 {
-	//Объявить частицы
+	//РћР±СЉСЏРІРёС‚СЊ С‡Р°СЃС‚РёС†С‹
 	UParticleSystem* SelectImpact = nullptr;
 
-//Задать частицы в зависимости от физ. материала поверхности
+//Р—Р°РґР°С‚СЊ С‡Р°СЃС‚РёС†С‹ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С„РёР·. РјР°С‚РµСЂРёР°Р»Р° РїРѕРІРµСЂС…РЅРѕСЃС‚Рё
 	switch (SurfaceType)
 	{
 	case SUFRACE_FLESHDEFAULT:
@@ -252,28 +252,28 @@ void ASWeapon::PlayImpactEffects(EPhysicalSurface SurfaceType, FVector ImpactPoi
 
 	if (SelectImpact)
 	{
-		//Положение сокета на оружии
+		//РџРѕР»РѕР¶РµРЅРёРµ СЃРѕРєРµС‚Р° РЅР° РѕСЂСѓР¶РёРё
 		FVector MuzzleLocation = MeshComp->GetSocketLocation(MuzzleSocketName);
 
-		//Вектор, направленный в сторону стрельбы
+		//Р’РµРєС‚РѕСЂ, РЅР°РїСЂР°РІР»РµРЅРЅС‹Р№ РІ СЃС‚РѕСЂРѕРЅСѓ СЃС‚СЂРµР»СЊР±С‹
 		FVector ShotVectorDirection = ImpactPoint - MuzzleLocation;
 
 		ShotVectorDirection.Normalize();
 
-		//Получить ротатор в сторону стрельбы
+		//РџРѕР»СѓС‡РёС‚СЊ СЂРѕС‚Р°С‚РѕСЂ РІ СЃС‚РѕСЂРѕРЅСѓ СЃС‚СЂРµР»СЊР±С‹
 		FRotator ShotRotatorDirection = ShotVectorDirection.Rotation();
 
-		//Спавн частиц на поверхности 
+		//РЎРїР°РІРЅ С‡Р°СЃС‚РёС† РЅР° РїРѕРІРµСЂС…РЅРѕСЃС‚Рё 
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectImpact, ImpactPoint, ShotRotatorDirection);
 	}
 
 }
 
-//Реплицировать переменные на клиенты
+//Р РµРїР»РёС†РёСЂРѕРІР°С‚СЊ РїРµСЂРµРјРµРЅРЅС‹Рµ РЅР° РєР»РёРµРЅС‚С‹
 void ASWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//Реплицировать на всех, кроме клиента-овнера оружия
+	//Р РµРїР»РёС†РёСЂРѕРІР°С‚СЊ РЅР° РІСЃРµС…, РєСЂРѕРјРµ РєР»РёРµРЅС‚Р°-РѕРІРЅРµСЂР° РѕСЂСѓР¶РёСЏ
 	DOREPLIFETIME_CONDITION(ASWeapon, HitScanTrace, COND_SkipOwner);
 }

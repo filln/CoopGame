@@ -1,6 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+п»ї // Fill out your copyright notice in the Description page of Project Settings.
 
-//Класс персонажа
+//РљР»Р°СЃСЃ РїРµСЂСЃРѕРЅР°Р¶Р°
 
 #pragma once
 
@@ -26,73 +26,73 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-//Двигаться вперед
+//Р”РІРёРіР°С‚СЊСЃСЏ РІРїРµСЂРµРґ
 	void MoveForward(float Value);
 
-//Двигаться вправо
+//Р”РІРёРіР°С‚СЊСЃСЏ РІРїСЂР°РІРѕ
 	void MoveRight(float Value);
 
-//Камера
+//РљР°РјРµСЂР°
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		UCameraComponent* CameraComp;
 
-//Связь между камерой и мешем
+//РЎРІСЏР·СЊ РјРµР¶РґСѓ РєР°РјРµСЂРѕР№ Рё РјРµС€РµРј
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		USpringArmComponent* SpringArmComp;
 
-//Начать красться
+//РќР°С‡Р°С‚СЊ РєСЂР°СЃС‚СЊСЃСЏ
 	void BeginCrouch();
 
-//Закончить красться
+//Р—Р°РєРѕРЅС‡РёС‚СЊ РєСЂР°СЃС‚СЊСЃСЏ
 	void EndCrouch();
 
-//Изменить угол обзора
+//РР·РјРµРЅРёС‚СЊ СѓРіРѕР» РѕР±Р·РѕСЂР°
 	void BeginZoom();
 
-//Вернуть угол обзора
+//Р’РµСЂРЅСѓС‚СЊ СѓРіРѕР» РѕР±Р·РѕСЂР°
 	void EndZoom();
 
-//Включить изменение угла обзора?
+//Р’РєР»СЋС‡РёС‚СЊ РёР·РјРµРЅРµРЅРёРµ СѓРіР»Р° РѕР±Р·РѕСЂР°?
 	bool bWantsToZoom;
 
-//Дефолтный угол обзора
+//Р”РµС„РѕР»С‚РЅС‹Р№ СѓРіРѕР» РѕР±Р·РѕСЂР°
 	float DefaultFOV;
 
-//Измененный угол обзора
+//РР·РјРµРЅРµРЅРЅС‹Р№ СѓРіРѕР» РѕР±Р·РѕСЂР°
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 		float ZoomedFOV;
 
-//Скорость изменения угла обзора
+//РЎРєРѕСЂРѕСЃС‚СЊ РёР·РјРµРЅРµРЅРёСЏ СѓРіР»Р° РѕР±Р·РѕСЂР°
 	UPROPERTY(EditDefaultsOnly, Category = "Player", meta = (ClampMin = 1.0f, ClampMax = 100.0f))
 		float ZoomInterpSpeed;
 
-//Начать стрельбу
+//РќР°С‡Р°С‚СЊ СЃС‚СЂРµР»СЊР±Сѓ
 	void StartFire();
 
-//Закончить стрельбу
+//Р—Р°РєРѕРЅС‡РёС‚СЊ СЃС‚СЂРµР»СЊР±Сѓ
 	void StopFire();
 
-//Текущее оружие
+//РўРµРєСѓС‰РµРµ РѕСЂСѓР¶РёРµ
 	UPROPERTY(Replicated)
 		ASWeapon* CurrentWeapon;
 
-//Класс текущего оружия
+//РљР»Р°СЃСЃ С‚РµРєСѓС‰РµРіРѕ РѕСЂСѓР¶РёСЏ
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 		TSubclassOf<ASWeapon> WeaponClass;
 
-//Сокет на оружии, для начальной точки стрельбы
+//РЎРѕРєРµС‚ РЅР° РѕСЂСѓР¶РёРё, РґР»СЏ РЅР°С‡Р°Р»СЊРЅРѕР№ С‚РѕС‡РєРё СЃС‚СЂРµР»СЊР±С‹
 	UPROPERTY(VisibleDefaultsOnly, Category = "Player")
 		FName WeaponSocket;
 
-//Компонент для хранения и изменения ХП
+//РљРѕРјРїРѕРЅРµРЅС‚ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ Рё РёР·РјРµРЅРµРЅРёСЏ РҐРџ
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		USHealthComponent* HealthComp;
 
-//Функция для перегрузки евента HealthComp->OnHealthChanged
+//Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРµСЂРµРіСЂСѓР·РєРё РµРІРµРЅС‚Р° HealthComp->OnHealthChanged
 	UFUNCTION()
 		void OnHealthChanged(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
-//Персонаж мертв?
+//РџРµСЂСЃРѕРЅР°Р¶ РјРµСЂС‚РІ?
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Player")
 		bool bIsDied;
 
@@ -101,10 +101,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
-	//Забиндить управление клавиатурой и мышью
+	//Р—Р°Р±РёРЅРґРёС‚СЊ СѓРїСЂР°РІР»РµРЅРёРµ РєР»Р°РІРёР°С‚СѓСЂРѕР№ Рё РјС‹С€СЊСЋ
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-//Взять координаты камеры или координты "глаз" персонажа
+//Р’Р·СЏС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹ РєР°РјРµСЂС‹ РёР»Рё РєРѕРѕСЂРґРёРЅС‚С‹ "РіР»Р°Р·" РїРµСЂСЃРѕРЅР°Р¶Р°
 	virtual FVector GetPawnViewLocation() const override;
 
 };

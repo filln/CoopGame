@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+п»ї // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SExplosiveBarrel.h"
 #include "SHealthComponent.h"
@@ -9,40 +9,40 @@
 // Sets default values
 ASExplosiveBarrel::ASExplosiveBarrel()
 {
-	//Создать меш
+	//РЎРѕР·РґР°С‚СЊ РјРµС€
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 
-	//Включить физику
+	//Р’РєР»СЋС‡РёС‚СЊ С„РёР·РёРєСѓ
 	MeshComp->SetSimulatePhysics(true);
 
-	//Назначить тип коллизии 
+	//РќР°Р·РЅР°С‡РёС‚СЊ С‚РёРї РєРѕР»Р»РёР·РёРё 
 	MeshComp->SetCollisionObjectType(ECC_PhysicsBody);
 
-	//Сделать рут-компонентом
+	//РЎРґРµР»Р°С‚СЊ СЂСѓС‚-РєРѕРјРїРѕРЅРµРЅС‚РѕРј
 	RootComponent = MeshComp;
 
-	//Создать Компонент для хранения и изменения ХП
+	//РЎРѕР·РґР°С‚СЊ РљРѕРјРїРѕРЅРµРЅС‚ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ Рё РёР·РјРµРЅРµРЅРёСЏ РҐРџ
 	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
 
-	//Задать функцию для перегрузки евента
+	//Р—Р°РґР°С‚СЊ С„СѓРЅРєС†РёСЋ РґР»СЏ РїРµСЂРµРіСЂСѓР·РєРё РµРІРµРЅС‚Р°
 	HealthComp->OnHealthChanged.AddDynamic(this, &ASExplosiveBarrel::OnHealthChanged);
 
-	//Создать объект компонент для применения силы к окружающим объектам
+	//РЎРѕР·РґР°С‚СЊ РѕР±СЉРµРєС‚ РєРѕРјРїРѕРЅРµРЅС‚ РґР»СЏ РїСЂРёРјРµРЅРµРЅРёСЏ СЃРёР»С‹ Рє РѕРєСЂСѓР¶Р°СЋС‰РёРј РѕР±СЉРµРєС‚Р°Рј
 	RadialForceComp = CreateDefaultSubobject<URadialForceComponent>(TEXT("RadialForceComp"));
 
-	//Приаттачить к мешу (руту)
+	//РџСЂРёР°С‚С‚Р°С‡РёС‚СЊ Рє РјРµС€Сѓ (СЂСѓС‚Сѓ)
 	RadialForceComp->SetupAttachment(MeshComp);
 
-	//не активировать автоматически, только по событию
+	//РЅРµ Р°РєС‚РёРІРёСЂРѕРІР°С‚СЊ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё, С‚РѕР»СЊРєРѕ РїРѕ СЃРѕР±С‹С‚РёСЋ
 	RadialForceComp->bAutoActivate = false;
 
-	//импульс игнорирует массу объектов и всегда приводит к изменению скорости
+	//РёРјРїСѓР»СЊСЃ РёРіРЅРѕСЂРёСЂСѓРµС‚ РјР°СЃСЃСѓ РѕР±СЉРµРєС‚РѕРІ Рё РІСЃРµРіРґР° РїСЂРёРІРѕРґРёС‚ Рє РёР·РјРµРЅРµРЅРёСЋ СЃРєРѕСЂРѕСЃС‚Рё
 	RadialForceComp->bImpulseVelChange = true;
 
-	//Игнорировать себя (актора, владеющего компонентом URadialForceComponent)
+	//РРіРЅРѕСЂРёСЂРѕРІР°С‚СЊ СЃРµР±СЏ (Р°РєС‚РѕСЂР°, РІР»Р°РґРµСЋС‰РµРіРѕ РєРѕРјРїРѕРЅРµРЅС‚РѕРј URadialForceComponent)
 	RadialForceComp->bIgnoreOwningActor = true;
 
-	//Радиус применения силы
+	//Р Р°РґРёСѓСЃ РїСЂРёРјРµРЅРµРЅРёСЏ СЃРёР»С‹
 	RadialForceComp->Radius = 250;
 
 	ExplosionImpulse = 400;
@@ -51,33 +51,33 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 
 void ASExplosiveBarrel::OnHealthChanged(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
-	//Если бочка уже взорвана, то не реагировать
+	//Р•СЃР»Рё Р±РѕС‡РєР° СѓР¶Рµ РІР·РѕСЂРІР°РЅР°, С‚Рѕ РЅРµ СЂРµР°РіРёСЂРѕРІР°С‚СЊ
 	if (bExploded)
 	{
 		return;
 	}
 
-	//Если ХП меньше 0
+	//Р•СЃР»Рё РҐРџ РјРµРЅСЊС€Рµ 0
 	if (Health <= 0.0f)
 	{
 		bExploded = true;
 		Exploded();
 
-		//Применить импульс к себе
+		//РџСЂРёРјРµРЅРёС‚СЊ РёРјРїСѓР»СЊСЃ Рє СЃРµР±Рµ
 		FVector BoostIntensity = FVector::UpVector * ExplosionImpulse;
 		MeshComp->AddImpulse(BoostIntensity, NAME_None, true);
 
-		//Применить импульс к окружающим объектам
+		//РџСЂРёРјРµРЅРёС‚СЊ РёРјРїСѓР»СЊСЃ Рє РѕРєСЂСѓР¶Р°СЋС‰РёРј РѕР±СЉРµРєС‚Р°Рј
 		RadialForceComp->FireImpulse();
 	}
 }
 
 void ASExplosiveBarrel::Exploded()
 {
-	//Спавн частиц взрыва
+	//РЎРїР°РІРЅ С‡Р°СЃС‚РёС† РІР·СЂС‹РІР°
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffects, GetActorLocation());
 
-	//Изменить материал
+	//РР·РјРµРЅРёС‚СЊ РјР°С‚РµСЂРёР°Р»
 	MeshComp->SetMaterial(0, ExplodedMaterial);
 }
 

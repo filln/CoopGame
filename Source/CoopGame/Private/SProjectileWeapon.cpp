@@ -1,35 +1,35 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿ // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SProjectileWeapon.h"
 
 void ASProjectileWeapon::Fire()
 {
-	//Ïðîâåðèòü íà îâíåðà è êëàññ ñíàðÿäà. Îâíåð çàäàåòñÿ, êîãäà îðóæèå ñïàâíèòñÿ
+	//ÐŸÑ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ Ð½Ð° Ð¾Ð²Ð½ÐµÑ€Ð° Ð¸ ÐºÐ»Ð°ÑÑ ÑÐ½Ð°Ñ€ÑÐ´Ð°. ÐžÐ²Ð½ÐµÑ€ Ð·Ð°Ð´Ð°ÐµÑ‚ÑÑ, ÐºÐ¾Ð³Ð´Ð° Ð¾Ñ€ÑƒÐ¶Ð¸Ðµ ÑÐ¿Ð°Ð²Ð½Ð¸Ñ‚ÑÑ
 	AActor* MyOwner = GetOwner();
 	if (MyOwner == nullptr || ProjectileClass == nullptr)
 	{
 		return;
 	}
 
-	//Òî÷êà, â êîòîðûõ ðàñïîëîæåíû "ãëàçà" îâíåðà
+	//Ð¢Ð¾Ñ‡ÐºÐ°, Ð² ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ñ… Ñ€Ð°ÑÐ¿Ð¾Ð»Ð¾Ð¶ÐµÐ½Ñ‹ "Ð³Ð»Ð°Ð·Ð°" Ð¾Ð²Ð½ÐµÑ€Ð°
 	FVector EyeStart;
 
-	//Íàïðàâëåíèå, â êîòîðîì ñìîòðèò îâíåð
+	//ÐÐ°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ, Ð² ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¼ ÑÐ¼Ð¾Ñ‚Ñ€Ð¸Ñ‚ Ð¾Ð²Ð½ÐµÑ€
 	FRotator EyeRotation;
 
-	//Çàïîëíèòü âåêòîð è ðîòàòîð àêòóàëüíûìè çíà÷åíèÿìè
+	//Ð—Ð°Ð¿Ð¾Ð»Ð½Ð¸Ñ‚ÑŒ Ð²ÐµÐºÑ‚Ð¾Ñ€ Ð¸ Ñ€Ð¾Ñ‚Ð°Ñ‚Ð¾Ñ€ Ð°ÐºÑ‚ÑƒÐ°Ð»ÑŒÐ½Ñ‹Ð¼Ð¸ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸ÑÐ¼Ð¸
 	MyOwner->GetActorEyesViewPoint(EyeStart, EyeRotation);
 
-	//Âçÿòü òî÷êó ñîêåòà (ñîêåò çàäàí â SWeapon)
+	//Ð’Ð·ÑÑ‚ÑŒ Ñ‚Ð¾Ñ‡ÐºÑƒ ÑÐ¾ÐºÐµÑ‚Ð° (ÑÐ¾ÐºÐµÑ‚ Ð·Ð°Ð´Ð°Ð½ Ð² SWeapon)
 	FVector MuzzleLocation = MeshComp->GetSocketLocation(MuzzleSocketName);
 
-	//Çàäàòü ïàðàìåòðû ñïàâíà
+	//Ð—Ð°Ð´Ð°Ñ‚ÑŒ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ ÑÐ¿Ð°Ð²Ð½Ð°
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	//Ñïàâíèòü ñíàðÿä
+	//Ð¡Ð¿Ð°Ð²Ð½Ð¸Ñ‚ÑŒ ÑÐ½Ð°Ñ€ÑÐ´
 	AActor* Projectile = GetWorld()->SpawnActor<AActor>(ProjectileClass, MuzzleLocation, EyeRotation, SpawnParams);
 
-	//Íàçíà÷èòü îâíåðîì äëÿ ñíàðÿäà ýòîò îáúåêò
+	//ÐÐ°Ð·Ð½Ð°Ñ‡Ð¸Ñ‚ÑŒ Ð¾Ð²Ð½ÐµÑ€Ð¾Ð¼ Ð´Ð»Ñ ÑÐ½Ð°Ñ€ÑÐ´Ð° ÑÑ‚Ð¾Ñ‚ Ð¾Ð±ÑŠÐµÐºÑ‚
 	Projectile->SetOwner(this);
 }
