@@ -4,6 +4,8 @@
 #include "SHealthComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PhysicsEngine/RadialForceComponent.h"
+#include "Net/UnrealNetwork.h"
+#include "CoopGame.h"
 
 
 // Sets default values
@@ -47,6 +49,12 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 
 	ExplosionImpulse = 400;
 
+	//Разрешить репликацию
+	SetReplicates(true);
+
+	//Разрешить репликацию движения
+	SetReplicateMovement(true);
+
 }
 
 void ASExplosiveBarrel::OnHealthChanged(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
@@ -57,11 +65,14 @@ void ASExplosiveBarrel::OnHealthChanged(USHealthComponent* OwningHealthComp, flo
 		return;
 	}
 
+//	UE_LOG(LogTemp, Log, TEXT("Health changed: %s"), *FString::SanitizeFloat(Health));
+
 	//Если ХП меньше 0
 	if (Health <= 0.0f)
 	{
 		bExploded = true;
-		Exploded();
+
+		OnRep_Exploded();
 
 		//Применить импульс к себе
 		FVector BoostIntensity = FVector::UpVector * ExplosionImpulse;
@@ -69,10 +80,12 @@ void ASExplosiveBarrel::OnHealthChanged(USHealthComponent* OwningHealthComp, flo
 
 		//Применить импульс к окружающим объектам
 		RadialForceComp->FireImpulse();
+
+
 	}
 }
 
-void ASExplosiveBarrel::Exploded()
+void ASExplosiveBarrel::OnRep_Exploded()
 {
 	//Спавн частиц взрыва
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffects, GetActorLocation());
@@ -81,5 +94,10 @@ void ASExplosiveBarrel::Exploded()
 	MeshComp->SetMaterial(0, ExplodedMaterial);
 }
 
-
+//Реплицировать данные
+void ASExplosiveBarrel::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ASExplosiveBarrel, bExploded);
+}
 

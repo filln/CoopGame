@@ -51,7 +51,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
 		float ExplosionImpulse;
 
-	//Была взорвана?
+	//Была взорвана? При репликации выполнить на клиенте OnRep_Exploded()
+	UPROPERTY(ReplicatedUsing = OnRep_Exploded)
 	bool bExploded;
 
 protected:
@@ -61,7 +62,8 @@ protected:
 		void OnHealthChanged(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 	//Эффекты взрыва
-	void Exploded();
+	UFUNCTION()
+	void OnRep_Exploded();
 
 
 };
