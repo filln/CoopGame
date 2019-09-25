@@ -9,7 +9,7 @@
 #include "GameFramework/Actor.h"
 #include "SExplosiveBarrel.generated.h"
 
-class UMeshComponent;
+class UStaticMeshComponent;
 class USHealthComponent;
 class URadialForceComponent;
 class UParticleSystem;
