@@ -300,6 +300,9 @@ void ASTrackerBot::Tick(float DeltaTime)
 
 void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
 {
+	//Вызвать метод родительского класса
+	Super::NotifyActorBeginOverlap(OtherActor);
+
 	//Если оверлапа перса и саморазрушения еще не было
 	if (!bStartedSelfDestruction && !bExploded)
 	{

@@ -45,4 +45,8 @@ public:
 	//объявить евент-диспатчер, который вызывается, когда меняется Health
 	UPROPERTY(BlueprintAssignable, Category = "Event")
 		FOnHealthChangeSignature OnHealthChanged;
+
+	//Лечение перса на HealAmount единиц
+	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
+		void Heal(float HealAmount);
 };
