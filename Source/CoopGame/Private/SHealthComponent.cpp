@@ -2,11 +2,14 @@
 
 #include "SHealthComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "SGameMode.h"
 
 // Sets default values for this component's properties
 USHealthComponent::USHealthComponent()
 {
 	DefaultHealth = 100;
+
+	bIsDead = false;
 
 	//Объект можно передавать по сети
 	SetIsReplicated(true);
@@ -30,6 +33,11 @@ void USHealthComponent::BeginPlay()
 
 
 	Health = DefaultHealth;
+}
+
+float USHealthComponent::GetHealth() const
+{
+	return Health;
 }
 
 void USHealthComponent::OnRep_Health(float OldHealth)
@@ -62,8 +70,10 @@ void USHealthComponent::Heal(float HealAmount)
 
 void USHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
-	if (Damage < 0.0f)
+	//Если дамаг отрицательный или владелец мертв.
+	if (Damage < 0.0f || bIsDead)
 	{
+		//Ничего не делать.
 		return;
 	}
 
@@ -72,8 +82,26 @@ void USHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 
 	UE_LOG(LogTemp, Log, TEXT("Health changed: %s"), *FString::SanitizeFloat(Health));
 
+	//Установить состояние владельца: мертв или нет.
+	bIsDead = Health <= 0.0f;
+
 //Вызвать диспатчер OnHealthChanged
 	OnHealthChanged.Broadcast(this, Health, Damage, DamageType, InstigatedBy, DamageCauser);
+
+	//Если владелец компонента мертв.
+	if (bIsDead)
+	{
+		//Получить ГеймМод.
+		ASGameMode* GM = Cast<ASGameMode>(GetWorld()->GetAuthGameMode());
+
+		//Если валиден.
+		if (GM)
+		{
+			//Вызвать евент.
+			GM->OnActorKilled.Broadcast(GetOwner(), DamageCauser, InstigatedBy);
+		}
+	}
+
 }
 
 //Реплицировать данные

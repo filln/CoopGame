@@ -1,6 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-//Компонент служит для хранения и изменения ХП, отслеживает получение дамага, меняет ХП после дамага и вызывает диспатчер OnHealthChanged
+//Компонент служит для хранения и изменения ХП, отслеживает получение дамага, меняет ХП после дамага и вызывает диспатчер OnHealthChanged.
 
 #pragma once
 
@@ -8,7 +8,7 @@
 #include "Components/ActorComponent.h"
 #include "SHealthComponent.generated.h"
 
-//объявить евент-диспатчер, который вызывается, когда меняется Health
+//Объявить евент-диспатчер, который вызывается, когда меняется Health.
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FOnHealthChangeSignature, USHealthComponent*, HealthComp, float, Health, float, HealthDelta, const class UDamageType*, DamageType,
 class AController*, InstigatedBy, AActor*, DamageCauser);
 
@@ -18,35 +18,53 @@ class COOPGAME_API USHealthComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this component's properties
+	// Sets default values for this component's properties.
 	USHealthComponent();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
 
-	//текущее ХП 
+protected:
+
+	//Текущее ХП. 
 	UPROPERTY(ReplicatedUsing=OnRep_Health, BlueprintReadOnly, Category = "HealthComponent")
 		float Health;
 
-	//дефолтное ХП
+	//Дефолтное ХП.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HealthComponent")
 		float DefaultHealth;
 
-	//получение дамага
+public:
+
+	//Объявить евент-диспатчер, который вызывается, когда меняется Health.
+	UPROPERTY(BlueprintAssignable, Category = "Event")
+		FOnHealthChangeSignature OnHealthChanged;
+
+protected:
+
+	//Состояние владельца компонента: мертв или нет.
+	bool bIsDead;
+
+protected:
+
+	//получение дамага.
 	UFUNCTION()
 		void HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
-	//Выполнить на клиенте при репликации Health
+	//Выполнить на клиенте при репликации Health.
 	UFUNCTION()
 		void OnRep_Health(float OldHealt);
 
 public:
-	//объявить евент-диспатчер, который вызывается, когда меняется Health
-	UPROPERTY(BlueprintAssignable, Category = "Event")
-		FOnHealthChangeSignature OnHealthChanged;
 
-	//Лечение перса на HealAmount единиц
+	//Лечение перса на HealAmount единиц.
 	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
 		void Heal(float HealAmount);
+
+protected:
+	// Called when the game starts.
+	virtual void BeginPlay() override;
+
+public:
+
+	//Вернуть Health.
+	float GetHealth() const;
 };
