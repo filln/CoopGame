@@ -169,7 +169,7 @@ void ASTrackerBot::SelfDestruct()
 		UGameplayStatics::ApplyRadialDamage(GetWorld(), ActualDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController());
 
 		//Нарисовать дебаг-сферу взрыва
-		DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, true, 5.0f, 0, 1.0f);
+		//DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, true, 5.0f, 0, 1.0f);
 
 		//Задать время жизни бота
 		SetLifeSpan(2.0f);
@@ -203,7 +203,7 @@ void ASTrackerBot::OnCheckNearbyBots()
 	GetWorld()->OverlapMultiByObjectType(Overlaps, GetActorLocation(), FQuat::Identity, QueryParams, CollShape);
 
 	//Отрисовать дебаг-сферу оверлапа
-	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 12, FColor::White, false, 1.0f);
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 12, FColor::White, false, 1.0f);
 
 	//Объявить счетчик находящихся рядом копий бота
 	int32 NearOfBots = 0;
@@ -243,7 +243,7 @@ void ASTrackerBot::OnCheckNearbyBots()
 	}
 
 	//Отрисовать дебаг-строку значения PowerLevel
-	DrawDebugString(GetWorld(), FVector(0, 0, 0), FString::FromInt(PowerLevel), this, FColor::White, 1.0f, true);
+	//DrawDebugString(GetWorld(), FVector(0, 0, 0), FString::FromInt(PowerLevel), this, FColor::White, 1.0f, true);
 }
 
 void ASTrackerBot::DamageSelf()
@@ -271,7 +271,7 @@ void ASTrackerBot::Tick(float DeltaTime)
 			NextPathPoint = GetNextPathPoint();
 
 			//Отрисовать подтверждение, что точка найдена
-			DrawDebugString(GetWorld(), GetActorLocation(), "Target reached!");
+			//DrawDebugString(GetWorld(), GetActorLocation(), "Target reached!");
 		}
 		//Если расстояние до цели больше минимального
 		else
@@ -289,11 +289,11 @@ void ASTrackerBot::Tick(float DeltaTime)
 			MeshComp->AddForce(ForceDirection, NAME_None, bUseVelocityChange);
 
 			//Отрисовать дебаг-линию до цели - будет примерной траекторией движения
-			DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + ForceDirection, 32, FColor::Yellow, false, 0.0f, 0, 1.0f);
+			//DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + ForceDirection, 32, FColor::Yellow, false, 0.0f, 0, 1.0f);
 		}
 
 		//Отрисовать дебаг-сферу в точке цели
-		DrawDebugSphere(GetWorld(), NextPathPoint, 20, 12, FColor::Yellow, false, 1.0f);
+		//DrawDebugSphere(GetWorld(), NextPathPoint, 20, 12, FColor::Yellow, false, 1.0f);
 	}
 
 }
