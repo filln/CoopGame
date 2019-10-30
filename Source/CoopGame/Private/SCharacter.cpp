@@ -145,6 +145,12 @@ void ASCharacter::OnHealthChanged(USHealthComponent* OwningHealthComp, float Hea
 
 		//Уничтожить объект перса через ... сек
 		SetLifeSpan(3.0f);
+
+		if (CurrentWeapon)
+		{
+			CurrentWeapon->StopFire();
+			CurrentWeapon->SetLifeSpan(3.0f);
+		}
 	}
 }
 

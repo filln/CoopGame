@@ -1,4 +1,4 @@
-﻿ // Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 //родительский класс всех классов оружия. 
 
@@ -20,11 +20,11 @@ struct FHitScanTrace
 	GENERATED_BODY()
 
 public:
-//физический материал поверхности, которую достигает трейсинг
+	//физический материал поверхности, которую достигает трейсинг
 	UPROPERTY()
 		TEnumAsByte<EPhysicalSurface> SurfaceType;
 
-//конечная точка трейсинга
+	//конечная точка трейсинга
 	UPROPERTY()
 		FVector_NetQuantize TraceTo;
 };
@@ -33,13 +33,12 @@ UCLASS()
 class COOPGAME_API ASWeapon : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ASWeapon();
 
 protected:
-	virtual void BeginPlay() override;
 
 	//Меш
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -81,22 +80,23 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 		float BaseDamage;
 
-	//Показать эффекты от выстрела
-	void PlayFireEffects(FVector TracerEndPoint);
-
-	//Показать эффекты от выстрела на поверхности
-	void PlayImpactEffects(EPhysicalSurface SurfaceType, FVector ImpactPoint);
-
 	//Тряска камеры при выстреле
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 		TSubclassOf<UCameraShake> FireCamShake;
 
-	//Выстрел
-	virtual void Fire();
+	//Частота выстрела - количество пуль в 1 минуту
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+		float RateOfFire;
 
-	//Выстрел на сервере
-	UFUNCTION(Server, Reliable, WithValidation)
-		void ServerFire();
+	//Структура для репликации 
+	UPROPERTY(ReplicatedUsing = OnRep_HitScanTrace)
+		FHitScanTrace HitScanTrace;
+
+	//Угол разброса пуль оружия (в градусах). Для того, чтобы выстрел не был идеально точным.
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta = (ClampMin=0.0f))
+		float BulletSpread;
+
+protected:
 
 	//Таймер для автоматического выстрела
 	FTimerHandle TimerHandle_TimeBetweenShots;
@@ -104,22 +104,33 @@ protected:
 	//Время последнего выстрела
 	float LastFireTime;
 
-	//Частота выстрела - количество пуль в 1 минуту
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-		float RateOfFire;
-
 	//Время между выстрелами
 	float TimeBetweenShots;
 
-	//Структура для репликации 
-	UPROPERTY(ReplicatedUsing = OnRep_HitScanTrace)
-		FHitScanTrace HitScanTrace;
+protected:
+
+	//Выстрел на сервере
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ServerFire();
 
 	//Выполняется на клиенте, когда HitScanTrace реплицируется 
 	UFUNCTION()
 		void OnRep_HitScanTrace();
 
-public:	
+protected:
+
+	virtual void BeginPlay() override;
+
+	//Показать эффекты от выстрела
+	void PlayFireEffects(FVector TracerEndPoint);
+
+	//Показать эффекты от выстрела на поверхности
+	void PlayImpactEffects(EPhysicalSurface SurfaceType, FVector ImpactPoint);
+
+	//Выстрел
+	virtual void Fire();
+
+public:
 
 	//Начать стрельбу
 	void StartFire();

@@ -97,6 +97,10 @@ protected:
 	//Таймер нанесения самоповреждений void DamageSelf()
 	FTimerHandle TimerHandle_DamageSelf;
 
+	//
+	FTimerHandle FTimerHandle_RefreshPath;
+
+protected:
 
 	//Евент для нанесения повреждений боту от перса
 	UFUNCTION()
@@ -114,6 +118,9 @@ protected:
 
 	//Поиск других копий бота для изменения мощности взрыва и изменения материалИнстанса (сигнал о том, что копия найдена)
 	void OnCheckNearbyBots();
+
+	//Обновить путь до цели.
+	void RefreshPath();
 
 public:
 	// Called every frame

@@ -34,6 +34,7 @@ ASWeapon::ASWeapon()
 	BaseDamage = 20.0f;
 	RateOfFire = 600;
 	LenghtTracing = 10000;
+	BulletSpread = 2.0f;
 	
 	//Объект можно передавать по сети
 	SetReplicates(true);
@@ -81,8 +82,15 @@ void ASWeapon::Fire()
 	//Определить вектор и ротатор EyeStart и EyeRotation
 	MyOwner->GetActorEyesViewPoint(EyeStart, EyeRotation);
 
-	//Единичный вектор, направленный в сторону ротатора EyeRotation
+	//Единичный вектор (вектор выстрела), направленный в сторону ротатора EyeRotation
 	FVector ShotDirection = EyeRotation.Vector();
+
+	//Перевести угол разброса пуль из градус в радианы.
+	float HalfRad = FMath::DegreesToRadians(BulletSpread);
+
+	//Найти вектор выстрела как случайный вектор в пределах конуса.
+	//Для того, чтобы выстрел не был идеално точным.
+	ShotDirection = FMath::VRandCone(ShotDirection, HalfRad, HalfRad);
 
 	//Найти конечную точку трейсинга
 	FVector TraceEnd = EyeStart + (ShotDirection * LenghtTracing);
@@ -126,8 +134,8 @@ void ASWeapon::Fire()
 			CurrentDamage *= 4.0f;
 		}
 
-		//Применить урон к HitActor
-		UGameplayStatics::ApplyPointDamage(HitActor, CurrentDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
+		//Применить урон к HitActor. Источник дамага DamageCauser - владелец оружия.
+		UGameplayStatics::ApplyPointDamage(HitActor, CurrentDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(), MyOwner, DamageType);
 
 		//Получить текущую точку трейсинга
 		TracerEndPoint = Hit.ImpactPoint;

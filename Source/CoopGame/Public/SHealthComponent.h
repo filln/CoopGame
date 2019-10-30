@@ -25,7 +25,7 @@ public:
 protected:
 
 	//Текущее ХП. 
-	UPROPERTY(ReplicatedUsing=OnRep_Health, BlueprintReadOnly, Category = "HealthComponent")
+	UPROPERTY(ReplicatedUsing = OnRep_Health, BlueprintReadOnly, Category = "HealthComponent")
 		float Health;
 
 	//Дефолтное ХП.
@@ -38,10 +38,15 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Event")
 		FOnHealthChangeSignature OnHealthChanged;
 
+	//Номер команды владельца.
+	UPROPERTY(EditDefaultsOnly, Category = "HealthComponent")
+		uint8 TeamNum;
+
 protected:
 
 	//Состояние владельца компонента: мертв или нет.
 	bool bIsDead;
+
 
 protected:
 
@@ -59,12 +64,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
 		void Heal(float HealAmount);
 
+	//Проверка, какой команде принадлежит (своей или вражеской).
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "HealthComponent")
+		static bool isFriendly(AActor* ActorA, AActor* ActorB);
+
+	//Вернуть Health.
+	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
+	float GetHealth() const;
+
 protected:
 	// Called when the game starts.
 	virtual void BeginPlay() override;
 
-public:
-
-	//Вернуть Health.
-	float GetHealth() const;
 };

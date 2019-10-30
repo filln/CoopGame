@@ -11,6 +11,16 @@
 #include "Components/SphereComponent.h"
 #include "Sound/SoundCue.h"
 
+
+//Консольная команда для отрисовки дебаг-сфер бота.
+static int32 DebugTrackerBotDrawing = 0;
+FAutoConsoleVariableRef CVARDebugTrackerBotDriwing(
+	TEXT("COOP.DebugTrackerBotDrawing"),
+	DebugTrackerBotDrawing,
+	TEXT("Draw debug TrackerBot"),
+	ECVF_Cheat);
+
+
 // Sets default values
 ASTrackerBot::ASTrackerBot()
 {
@@ -60,8 +70,8 @@ ASTrackerBot::ASTrackerBot()
 	bStartedSelfDestruction = false;
 	MovementForce = 1000;
 	RequiredDistanceToTarget = 50;
-	ExplosionRadius = 200;
-	ExplosionDamage = 40;
+	ExplosionRadius = 350;
+	ExplosionDamage = 60;
 	SelfDamageInterval = 0.5f;
 	MaxPowerLevel = 4;
 
@@ -76,7 +86,7 @@ void ASTrackerBot::BeginPlay()
 	if (Role == ROLE_Authority)
 	{
 		//Найти следующую точку движения
-		NextPathPoint = GetNextPathPoint();
+		RefreshPath();
 
 		//Запустить таймер поиска копий бота. Выполнять OnCheckNearbyBots() 1 раз в сек.
 		FTimerHandle FTimerHandle_CheckPowerLevel;
@@ -107,27 +117,72 @@ void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwningHealthComp, float H
 		SelfDestruct();
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("Health %s of %s"), *FString::SanitizeFloat(Health), *GetName());
+	//UE_LOG(LogTemp, Log, TEXT("Health %s of %s"), *FString::SanitizeFloat(Health), *GetName());
 }
 
 FVector ASTrackerBot::GetNextPathPoint()
 {
-	//Найти и запомнить перса
-	ACharacter* PlayerPawn = UGameplayStatics::GetPlayerCharacter(this, 0);
+	//Объявить указатель на лучшую цель бота.
+	AActor* BestTarget = nullptr;
 
-	//Найти точки пути к персу
-	UNavigationPath* NavPath = UNavigationSystemV1::FindPathToActorSynchronously(this, GetActorLocation(), PlayerPawn);
+	//Объявить ближайшую (минимальную) дистанцию до BestTarget и определить как максимальную для float.
+	float NearestTargerDistance = FLT_MAX;
 
-	//Если путь существует и точек пути болше 1. 
-	//Проверка существования пути нужна, т.к. при выполнении в BeginPlay() НавМеша может еще не существовать.
-	//Проверка на больше 1 нужна, т.к. первая точка - в точке расположения самого бота.
-	if (NavPath && NavPath->PathPoints.Num() > 1)
+	//Пройтись по павнам на карте.
+	for (FConstPawnIterator It = GetWorld()->GetPawnIterator(); It; It++)
 	{
-		//Взять вторую точку пути
-		return NavPath->PathPoints[1];
+		//Взять павна из итератора.
+		APawn* TestPawn = It->Get();
+
+		//Если павн невалиден или в своей команде, то перейти к 
+		//следующей итерации.
+		if (TestPawn == nullptr || USHealthComponent::isFriendly(TestPawn, this))
+		{
+			continue;
+		}
+
+		//Взять ХП-компонент павна.
+		USHealthComponent* TestPawnHealthComp = Cast<USHealthComponent>(TestPawn->GetComponentByClass(USHealthComponent::StaticClass()));
+
+		//Если ХП-компонент валиден и ХП больше 0.
+		if (TestPawnHealthComp && TestPawnHealthComp->GetHealth() > 0.0f)
+		{
+			//Получить дистанцию между собой и павном итератора.
+			float Distance = (TestPawn->GetActorLocation() - GetActorLocation()).Size();
+
+			//Если дистанция меньше минимальной.
+			if (Distance < NearestTargerDistance)
+			{
+				//Определить лучшую цель.
+				BestTarget = TestPawn;
+
+				//Определить минимальную дистанцию.
+				NearestTargerDistance = Distance;
+			}
+		}
 	}
 
-	//Если пути не существует или точек 1 или меньше, то взять точку расположения самого бота
+	//Если определена лучшая цель.
+	if (BestTarget)
+	{
+		//Найти точки пути к персу.
+		UNavigationPath* NavPath = UNavigationSystemV1::FindPathToActorSynchronously(this, GetActorLocation(), BestTarget);
+
+		//Подготовить к нахождению следующей точки назначения.
+		GetWorldTimerManager().SetTimer(FTimerHandle_RefreshPath, this, &ASTrackerBot::RefreshPath, 5.0f, false);
+
+		//Если путь существует и точек пути болше 1. 
+		//Проверка существования пути нужна, т.к. при выполнении в BeginPlay() НавМеша может еще не существовать.
+		//Проверка на больше 1 нужна, т.к. первая точка - в точке расположения самого бота.
+		if (NavPath && NavPath->PathPoints.Num() > 1)
+		{
+			//Взять вторую точку пути.
+			return NavPath->PathPoints[1];
+		}
+	}
+
+
+	//Если пути не существует или точек 1 или меньше, то взять точку расположения самого бота.
 	return GetActorLocation();
 
 }
@@ -151,6 +206,7 @@ void ASTrackerBot::SelfDestruct()
 
 	//Сделать меш невидимым и проходимым
 	MeshComp->SetVisibility(false, true);
+	MeshComp->SetSimulatePhysics(false);
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	//Выполнять на сервере
@@ -169,7 +225,11 @@ void ASTrackerBot::SelfDestruct()
 		UGameplayStatics::ApplyRadialDamage(GetWorld(), ActualDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController());
 
 		//Нарисовать дебаг-сферу взрыва
-		//DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, true, 5.0f, 0, 1.0f);
+		if (DebugTrackerBotDrawing)
+		{
+			DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, true, 5.0f, 0, 1.0f);
+		}
+
 
 		//Задать время жизни бота
 		SetLifeSpan(2.0f);
@@ -203,7 +263,11 @@ void ASTrackerBot::OnCheckNearbyBots()
 	GetWorld()->OverlapMultiByObjectType(Overlaps, GetActorLocation(), FQuat::Identity, QueryParams, CollShape);
 
 	//Отрисовать дебаг-сферу оверлапа
-	//DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 12, FColor::White, false, 1.0f);
+	if (DebugTrackerBotDrawing)
+	{
+		DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 12, FColor::White, false, 1.0f);
+	}
+
 
 	//Объявить счетчик находящихся рядом копий бота
 	int32 NearOfBots = 0;
@@ -231,7 +295,7 @@ void ASTrackerBot::OnCheckNearbyBots()
 		//Создать и применить материал
 		MatInst = MeshComp->CreateAndSetMaterialInstanceDynamicFromMaterial(0, MeshComp->GetMaterial(0));
 	}
-	
+
 	//Если материал был создан
 	if (MatInst)
 	{
@@ -243,7 +307,11 @@ void ASTrackerBot::OnCheckNearbyBots()
 	}
 
 	//Отрисовать дебаг-строку значения PowerLevel
-	//DrawDebugString(GetWorld(), FVector(0, 0, 0), FString::FromInt(PowerLevel), this, FColor::White, 1.0f, true);
+	if (DebugTrackerBotDrawing)
+	{
+		DrawDebugString(GetWorld(), FVector(0, 0, 0), FString::FromInt(PowerLevel), this, FColor::White, 1.0f, true);
+	}
+
 }
 
 void ASTrackerBot::DamageSelf()
@@ -267,11 +335,13 @@ void ASTrackerBot::Tick(float DeltaTime)
 		//Если расстояние до цели меньше, чем минимальное или равно
 		if (DistanceToTarget <= RequiredDistanceToTarget)
 		{
-			//Найти следущую точку цели
-			NextPathPoint = GetNextPathPoint();
 
 			//Отрисовать подтверждение, что точка найдена
-			//DrawDebugString(GetWorld(), GetActorLocation(), "Target reached!");
+			if (DebugTrackerBotDrawing)
+			{
+				DrawDebugString(GetWorld(), GetActorLocation(), "Target reached!");
+			}
+
 		}
 		//Если расстояние до цели больше минимального
 		else
@@ -289,11 +359,19 @@ void ASTrackerBot::Tick(float DeltaTime)
 			MeshComp->AddForce(ForceDirection, NAME_None, bUseVelocityChange);
 
 			//Отрисовать дебаг-линию до цели - будет примерной траекторией движения
-			//DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + ForceDirection, 32, FColor::Yellow, false, 0.0f, 0, 1.0f);
+			if (DebugTrackerBotDrawing)
+			{
+				DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + ForceDirection, 32, FColor::Yellow, false, 0.0f, 0, 1.0f);
+			}
+
 		}
 
 		//Отрисовать дебаг-сферу в точке цели
-		//DrawDebugSphere(GetWorld(), NextPathPoint, 20, 12, FColor::Yellow, false, 1.0f);
+		if (DebugTrackerBotDrawing)
+		{
+			DrawDebugSphere(GetWorld(), NextPathPoint, 20, 12, FColor::Yellow, false, 1.0f);
+		}
+
 	}
 
 }
@@ -309,8 +387,8 @@ void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
 		//Скастовать найденного актора к персу
 		ACharacter* PlayerPawn = Cast<ACharacter>(OtherActor);
 
-		//Если каст прошел (указатель каста валиден)
-		if (PlayerPawn)
+		//Если каст прошел (указатель каста валиден) и найденный актор в другой команде
+		if (PlayerPawn && !USHealthComponent::isFriendly(OtherActor, this))
 		{
 			//Выполнять на сервере
 			if (Role = ROLE_Authority)
@@ -328,5 +406,10 @@ void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
 		}
 
 	}
+}
+
+void ASTrackerBot::RefreshPath()
+{
+	NextPathPoint = GetNextPathPoint();
 }
 

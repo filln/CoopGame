@@ -11,6 +11,8 @@ USHealthComponent::USHealthComponent()
 
 	bIsDead = false;
 
+	TeamNum = 255;
+
 	//Объект можно передавать по сети
 	SetIsReplicated(true);
 }
@@ -68,12 +70,41 @@ void USHealthComponent::Heal(float HealAmount)
 
 }
 
+bool USHealthComponent::isFriendly(AActor* ActorA, AActor* ActorB)
+{
+	//Если указатель на одного из акторов невалиден, то вернуть "друг"
+	if (ActorA == nullptr || ActorB == nullptr)
+	{
+		return true;
+	}
+
+	//Получить указатели на ХП-компонеты акторов.
+	USHealthComponent* HealthCompA = Cast<USHealthComponent>(ActorA->GetComponentByClass(USHealthComponent::StaticClass()));
+	USHealthComponent* HealthCompB = Cast<USHealthComponent>(ActorB->GetComponentByClass(USHealthComponent::StaticClass()));
+
+	//Если указатель на один из ХП-компонентов невалиден, то вернуть "друг"
+	if (HealthCompA == nullptr || HealthCompB == nullptr)
+	{
+		return true;
+	}
+
+	//Сравнить номера команд и вернуть результат 
+	return HealthCompA->TeamNum == HealthCompB->TeamNum;
+}
+
 void USHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
 	//Если дамаг отрицательный или владелец мертв.
 	if (Damage < 0.0f || bIsDead)
 	{
 		//Ничего не делать.
+		return;
+	}
+
+	//Если атакует не сам себя и атакующий в одной команде с атакуемым, то ничего не делать.
+	//Если атакует сам себя, то не проводится проверка на команду и наносится дамаг.
+	if (DamagedActor != DamageCauser && isFriendly(DamagedActor, DamageCauser))
+	{
 		return;
 	}
 
